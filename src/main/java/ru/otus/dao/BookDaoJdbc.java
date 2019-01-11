@@ -32,10 +32,10 @@ public class BookDaoJdbc implements BookDao {
         params.put("genre_id", book.getGenre().getId());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(
-                "insert into books (name, summary, author_id, genre_id) values (:name, :summary, :author_id, :genre_id);",
+                "insert into books (book_name, book_summary, author_id, genre_id) values (:name, :summary, :author_id, :genre_id);",
                 new MapSqlParameterSource(params),
                 keyHolder,
-                new String[]{"id"});
+                new String[]{"book_id"});
         return keyHolder.getKey().intValue();
     }
 
@@ -47,18 +47,18 @@ public class BookDaoJdbc implements BookDao {
         source.addValue("summary", book.getSummary());
         source.addValue("author_id", book.getAuthor().getId());
         source.addValue("genre_id", book.getGenre().getId());
-        jdbc.update("update books set name = :name, summary = :summary, author_id = :author_id, genre_id = :genre_id where id = :id;", source);
+        jdbc.update("update books set book_name = :name, book_summary = :summary, author_id = :author_id, genre_id = :genre_id where book_id = :id;", source);
     }
 
     @Override
     public Book getById(int id) {
         try {
             return jdbc.queryForObject(
-                    "select books.id id, books.name name, summary, author_id, authors.name author_name, lastname, genre_id, genres.name genre_name\n" +
+                    "select book_id id, book_name name, book_summary, books.author_id, author_name, author_lastname, books.genre_id, genre_name\n" +
                             "from books\n" +
-                            "left join authors on author_id = authors.id\n" +
-                            "left join genres on genre_id = genres.id\n" +
-                            "where books.id = :id",
+                            "left join authors on books.author_id = authors.author_id\n" +
+                            "left join genres on books.genre_id = genres.genre_id\n" +
+                            "where book_id = :id",
                     new MapSqlParameterSource(Collections.singletonMap("id", id)),
                     new BookMapper()
             );
@@ -69,14 +69,14 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public List<Book> getAll() {
-        return jdbc.query("select books.id id, books.name name, summary, author_id, authors.name author_name, lastname, genre_id, genres.name genre_name\n" +
+        return jdbc.query("select book_id id, book_name name, book_summary, books.author_id, author_name, author_lastname, books.genre_id, genre_name\n" +
                 "from books\n" +
-                "left join authors on author_id = authors.id\n" +
-                "left join genres on genre_id = genres.id;", new BookMapper());
+                "left join authors on books.author_id = authors.author_id\n" +
+                "left join genres on books.genre_id = genres.genre_id\n", new BookMapper());
     }
 
     @Override
     public void delete(int id) {
-        jdbc.update("delete from books where id = :id", Collections.singletonMap("id", id));
+        jdbc.update("delete from books where book_id = :id", Collections.singletonMap("id", id));
     }
 }

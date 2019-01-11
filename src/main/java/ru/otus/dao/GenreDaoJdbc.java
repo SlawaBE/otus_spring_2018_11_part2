@@ -26,7 +26,7 @@ public class GenreDaoJdbc implements GenreDao {
     public int create(Genre genre) {
         MapSqlParameterSource source = new MapSqlParameterSource(Collections.singletonMap("name", genre.getName()));
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbc.update("insert into genres (name) values (:name);", source, keyHolder, new String[]{"id"});
+        jdbc.update("insert into genres (genre_name) values (:name);", source, keyHolder, new String[]{"genre_id"});
         return keyHolder.getKey().intValue();
     }
 
@@ -34,14 +34,14 @@ public class GenreDaoJdbc implements GenreDao {
         MapSqlParameterSource source = new MapSqlParameterSource();
         source.addValue("id", genre.getId());
         source.addValue("name", genre.getName());
-        jdbc.update("update genres set name = :name where id = :id", source);
+        jdbc.update("update genres set genre_name = :name where genre_id = :id", source);
     }
 
     @Override
     public Genre getById(int id) {
         try {
             return jdbc.queryForObject(
-                    "select * from genres where id = :id",
+                    "select * from genres where genre_id = :id",
                     Collections.singletonMap("id", id),
                     new GenreMapper()
             );
@@ -58,7 +58,7 @@ public class GenreDaoJdbc implements GenreDao {
     @Override
     public boolean delete(int id) {
         try {
-            jdbc.update("delete from genres where id = :id", Collections.singletonMap("id", id));
+            jdbc.update("delete from genres where genre_id = :id", Collections.singletonMap("id", id));
             return true;
         } catch (DataIntegrityViolationException e) {
             return false;

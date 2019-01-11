@@ -28,7 +28,7 @@ public class AuthorDaoJdbc implements AuthorDao {
         MapSqlParameterSource source = new MapSqlParameterSource();
         source.addValue("name", author.getName());
         source.addValue("lastname", author.getLastName());
-        jdbc.update("insert into authors (name, lastname) values (:name, :lastname);", source, keyHolder, new String[]{"id"});
+        jdbc.update("insert into authors (author_name, author_lastname) values (:name, :lastname);", source, keyHolder, new String[]{"author_id"});
         return keyHolder.getKey().intValue();
     }
 
@@ -38,14 +38,14 @@ public class AuthorDaoJdbc implements AuthorDao {
         source.addValue("id", author.getId());
         source.addValue("name", author.getName());
         source.addValue("lastname", author.getLastName());
-        jdbc.update("update authors set name = :name, lastname = :lastname where id = :id;", source);
+        jdbc.update("update authors set author_name = :name, author_lastname = :lastname where author_id = :id;", source);
     }
 
     @Override
     public Author getById(int id) {
         try {
             return jdbc.queryForObject(
-                    "select * from authors where id = :id",
+                    "select * from authors where author_id = :id",
                     Collections.singletonMap("id", id),
                     new AuthorMapper()
             );
@@ -62,7 +62,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     @Override
     public boolean delete(int id) {
         try {
-            jdbc.update("delete from authors where id = :id", Collections.singletonMap("id", id));
+            jdbc.update("delete from authors where author_id = :id", Collections.singletonMap("id", id));
             return true;
         } catch (DataIntegrityViolationException e) {
             return false;
