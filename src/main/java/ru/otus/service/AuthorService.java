@@ -1,6 +1,6 @@
 package ru.otus.service;
 
-import ru.otus.model.Author;
+import ru.otus.entity.Author;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ public interface AuthorService {
 
     List<Author> getAll();
 
-    boolean delete(int id);
+    void delete(int id);
 }

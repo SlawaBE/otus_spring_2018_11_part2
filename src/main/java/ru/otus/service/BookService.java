@@ -1,6 +1,6 @@
 package ru.otus.service;
 
-import ru.otus.model.Book;
+import ru.otus.entity.Book;
 
 import java.util.List;
 

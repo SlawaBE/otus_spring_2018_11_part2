@@ -1,6 +1,6 @@
 package ru.otus.service;
 
-import ru.otus.model.Genre;
+import ru.otus.entity.Genre;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ public interface GenreService {
 
     List<Genre> getAll();
 
-    boolean delete(int id);
+    void delete(int id);
 }

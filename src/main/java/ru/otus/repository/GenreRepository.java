@@ -1,10 +1,10 @@
-package ru.otus.dao;
+package ru.otus.repository;
 
-import ru.otus.model.Genre;
+import ru.otus.entity.Genre;
 
 import java.util.List;
 
-public interface GenreDao {
+public interface GenreRepository {
 
     int create(Genre genre);
 
@@ -14,6 +14,6 @@ public interface GenreDao {
 
     List<Genre> getAll();
 
-    boolean delete(int id);
+    void delete(int id);
 
 }

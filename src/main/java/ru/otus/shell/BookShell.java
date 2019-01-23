@@ -4,18 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import ru.otus.model.Author;
-import ru.otus.model.Book;
-import ru.otus.model.Genre;
-import ru.otus.service.BookServiceImpl;
+import ru.otus.entity.Author;
+import ru.otus.entity.Book;
+import ru.otus.entity.Genre;
+import ru.otus.service.BookService;
 
 @ShellComponent
 public class BookShell {
 
-    private final BookServiceImpl bookService;
+    private final BookService bookService;
 
     @Autowired
-    public BookShell(BookServiceImpl bookService) {
+    public BookShell(BookService bookService) {
         this.bookService = bookService;
     }
 
@@ -74,7 +74,7 @@ public class BookShell {
     public void deleteBook(@ShellOption(help = "id книги") int id) {
         bookService.delete(id);
     }
-    
+
     private String getInfo(Book book) {
         StringBuilder sb = new StringBuilder();
         Author author = book.getAuthor();
@@ -86,6 +86,7 @@ public class BookShell {
                 .append("Жанр: ").append(genre.getName()).append("\n")
                 .append("\tID жанра: ").append(genre.getId()).append("\n")
                 .append("Описание: ").append(book.getSummary()).append("\n");
+//        book.getComments().forEach(sb::append);
         return sb.toString();
     }
 }

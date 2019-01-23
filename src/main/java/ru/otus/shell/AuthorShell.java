@@ -3,7 +3,7 @@ package ru.otus.shell;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import ru.otus.model.Author;
+import ru.otus.entity.Author;
 import ru.otus.service.AuthorService;
 
 @ShellComponent
@@ -52,12 +52,8 @@ public class AuthorShell {
     }
 
     @ShellMethod("удаляет автора по id")
-    public String deleteAuthor(@ShellOption(help = "id автора") int id) {
-        if (authorService.delete(id)) {
-            return "Автор успешно удалён";
-        } else {
-            return "Нельзя удалить автора, пока есть связанные с ним книги";
-        }
+    public void deleteAuthor(@ShellOption(help = "id автора") int id) {
+        authorService.delete(id);
     }
 
     private String getInfo(Author author) {

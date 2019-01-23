@@ -1,32 +1,39 @@
-package ru.otus.dao;
+package ru.otus.repository;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.shell.jline.InteractiveShellApplicationRunner;
+import org.springframework.shell.jline.ScriptShellApplicationRunner;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.model.Author;
+import ru.otus.entity.Author;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 @RunWith(SpringRunner.class)
-@JdbcTest(properties = "spring.datasource.data=testdata.sql")
-@Import(AuthorDaoJdbc.class)
-class AuthorDaoJdbcTest {
+@SpringBootTest(properties = {
+        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
+        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false",
+        "spring.datasource.data=testdata.sql"
+})
+@Transactional
+class AuthorRepositoryJpaTest {
 
     @Autowired
-    private AuthorDaoJdbc jdbc;
+    private AuthorRepositoryJpa repositoryJpa;
 
     @Test
     void createTest() {
         Author expected = new Author("Test", "Testov");
-        int id = jdbc.create(expected);
-        Author actual = jdbc.getById(id);
+        int id = repositoryJpa.create(expected);
+        Author actual = repositoryJpa.getById(id);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", id)
                 .hasFieldOrPropertyWithValue("name", "Test")
@@ -36,8 +43,8 @@ class AuthorDaoJdbcTest {
     @Test
     void updateTest() {
         Author expected = new Author(1, "Test", "Testov");
-        jdbc.update(expected);
-        Author actual = jdbc.getById(1);
+        repositoryJpa.update(expected);
+        Author actual = repositoryJpa.getById(1);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "Test")
@@ -46,13 +53,13 @@ class AuthorDaoJdbcTest {
 
     @Test
     void getAllTest() {
-        List<Author> authors = jdbc.getAll();
+        List<Author> authors = repositoryJpa.getAll();
         assertEquals(authors.size(), 3);
     }
 
     @Test
     void getByIdTest() {
-        Author author = jdbc.getById(1);
+        Author author = repositoryJpa.getById(1);
         assertThat(author)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "Name1")
@@ -61,9 +68,8 @@ class AuthorDaoJdbcTest {
 
     @Test
     void deleteTest() {
-        assertNotNull(jdbc.getById(3));
-        assertTrue(jdbc.delete(3));
-        assertNull(jdbc.getById(3));
-        assertFalse(jdbc.delete(1));
+        assertNotNull(repositoryJpa.getById(3));
+        repositoryJpa.delete(3);
+        assertThrows(EmptyResultDataAccessException.class, () -> repositoryJpa.getById(3));
     }
 }

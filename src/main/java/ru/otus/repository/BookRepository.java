@@ -1,10 +1,10 @@
-package ru.otus.dao;
+package ru.otus.repository;
 
-import ru.otus.model.Book;
+import ru.otus.entity.Book;
 
 import java.util.List;
 
-public interface BookDao {
+public interface BookRepository {
 
     int create(Book book);
 

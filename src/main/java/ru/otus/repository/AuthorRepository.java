@@ -1,10 +1,10 @@
-package ru.otus.dao;
+package ru.otus.repository;
 
-import ru.otus.model.Author;
+import ru.otus.entity.Author;
 
 import java.util.List;
 
-public interface AuthorDao {
+public interface AuthorRepository {
 
     int create(Author author);
 
@@ -14,5 +14,5 @@ public interface AuthorDao {
 
     List<Author> getAll();
 
-    boolean delete(int id);
+    void delete(int id);
 }

@@ -1,12 +1,24 @@
-package ru.otus.model;
+package ru.otus.entity;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "authors")
 public class Author {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "author_id")
     private int id;
 
+    @Column(name = "author_name")
     private String name;
 
+    @Column(name = "author_lastname")
     private String lastName;
+
+    public Author() {
+    }
 
     public Author(int id) {
         this.id = id;
