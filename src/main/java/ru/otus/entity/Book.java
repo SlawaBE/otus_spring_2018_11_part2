@@ -1,5 +1,8 @@
 package ru.otus.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,12 +20,14 @@ public class Book {
     @Column(name = "book_summary")
     private String summary;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "author_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Author author;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "genre_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Genre genre;
 
     public Book() {

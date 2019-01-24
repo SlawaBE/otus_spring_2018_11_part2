@@ -4,13 +4,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.entity.Comment;
 
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @RunWith(SpringRunner.class)
@@ -19,13 +24,17 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class CommentRepositoryTest {
 
     @Autowired
+    private TestEntityManager em;
+
+    @Autowired
     private CommentRepository repository;
 
     @Test
     void testCreate() {
-        repository.save(new Comment("user", "text", 2));
-        List<Comment> comments = repository.findByBookId(2);
-        assertThat(comments.get(0))
+        Comment expected = new Comment("user", "text", 2);
+        repository.save(expected);
+        Comment actual = getComment(expected.getId());
+        assertThat(actual)
                 .hasFieldOrPropertyWithValue("userName", "user")
                 .hasFieldOrPropertyWithValue("text", "text")
                 .hasFieldOrPropertyWithValue("book.id", 2)
@@ -33,13 +42,23 @@ class CommentRepositoryTest {
     }
 
     @Test
+    void testFindByBookId() {
+        List<Comment> comments = new ArrayList<>();
+        comments.addAll(repository.findByBookId(1));
+        assertEquals(2, comments.size());
+    }
+
+    @Test
     void testDelete() {
-        Comment comment = new Comment("user", "delete test", 2);
-        repository.save(comment);
-        long countBefore = repository.findByBookId(2).size();
-        repository.deleteById(comment.getId());
-        long countAfter = repository.findByBookId(2).size();
-        assertThat(countAfter).isEqualTo(countBefore - 1);
+        assertNotNull(getComment(1));
+        repository.deleteById(1L);
+        assertThrows(NoResultException.class, () -> getComment(1L));
+    }
+
+    private Comment getComment(long id) {
+        TypedQuery<Comment> query = em.getEntityManager().createQuery("SELECT c from Comment c where id = :id", Comment.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
 }

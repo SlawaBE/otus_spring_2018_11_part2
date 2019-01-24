@@ -4,9 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.entity.Genre;
 
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +24,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class GenreRepositoryTest {
 
     @Autowired
+    private TestEntityManager em;
+
+    @Autowired
     private GenreRepository repository;
 
     @Test
     void createTest() {
         Genre expected = new Genre("Test");
         int id = repository.save(expected).getId();
-        Genre actual = repository.findById(id).get();
+        Genre actual = getGenre(id);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", id)
                 .hasFieldOrPropertyWithValue("name", "Test");
@@ -37,7 +43,7 @@ class GenreRepositoryTest {
     void updateTest() {
         Genre expected = new Genre(1, "Test");
         repository.save(expected);
-        Genre actual = repository.findById(1).get();
+        Genre actual = getGenre(1);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "Test");
@@ -60,9 +66,15 @@ class GenreRepositoryTest {
 
     @Test
     void deleteTest() {
-        assertTrue(repository.findById(3).isPresent());
+        assertNotNull(getGenre(3));
         repository.deleteById(3);
-        assertFalse(repository.findById(3).isPresent());
+        assertThrows(NoResultException.class, () -> getGenre(3));
+    }
+
+    private Genre getGenre(int id) {
+        TypedQuery<Genre> query = em.getEntityManager().createQuery("SELECT g from Genre g where id = :id", Genre.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
 }

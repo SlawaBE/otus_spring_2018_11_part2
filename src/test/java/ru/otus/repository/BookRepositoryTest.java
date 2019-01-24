@@ -4,11 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.entity.Author;
 import ru.otus.entity.Book;
 import ru.otus.entity.Genre;
 
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +26,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookRepositoryTest {
 
     @Autowired
+    private TestEntityManager em;
+
+    @Autowired
     private BookRepository repository;
 
     @Test
     void createTest() {
         Book expected = new Book("Test", "description", new Author(1, null, "lastname"), new Genre(1, null));
         int id = repository.save(expected).getId();
-        Book actual = repository.findById(id).get();
+        Book actual = getBook(id);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", id)
                 .hasFieldOrPropertyWithValue("name", "Test")
@@ -42,7 +48,7 @@ class BookRepositoryTest {
     void updateTest() {
         Book expected = new Book(1, "Test", "description", new Author(1, "name", "lastname"), new Genre(1, "name"));
         repository.save(expected);
-        Book actual = repository.findById(1).get();
+        Book actual = getBook(1);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "Test")
@@ -74,9 +80,15 @@ class BookRepositoryTest {
 
     @Test
     void deleteTest() {
-        assertTrue(repository.findById(1).isPresent());
+        assertNotNull(getBook(1));
         repository.deleteById(1);
-        assertFalse(repository.findById(1).isPresent());
+        assertThrows(NoResultException.class, () -> getBook(1));
+    }
+
+    private Book getBook(int id) {
+        TypedQuery<Book> query = em.getEntityManager().createQuery("SELECT b from Book b where id = :id", Book.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
 }
