@@ -1,19 +1,8 @@
 package ru.otus.repository;
 
+import org.springframework.data.repository.CrudRepository;
 import ru.otus.entity.Book;
 
-import java.util.List;
-
-public interface BookRepository {
-
-    int create(Book book);
-
-    void update(Book book);
-
-    Book getById(int id);
-
-    List<Book> getAll();
-
-    void delete(int id);
+public interface BookRepository extends CrudRepository<Book, Integer> {
 
 }

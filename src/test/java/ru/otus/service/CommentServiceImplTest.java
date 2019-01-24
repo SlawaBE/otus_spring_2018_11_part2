@@ -13,6 +13,7 @@ import ru.otus.repository.CommentRepository;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
@@ -34,20 +35,21 @@ class CommentServiceImplTest {
 
     @Test
     void testCreate() {
+        when(commentRepository.save(comment)).thenReturn(comment);
         commentService.create(comment);
-        verify(commentRepository, times(1)).create(comment);
+        verify(commentRepository, times(1)).save(comment);
     }
 
     @Test
     void testGetByBookId() {
         commentService.getByBookId(1);
-        verify(commentRepository, times(1)).getByBookId(1);
+        verify(commentRepository, times(1)).findByBookId(1);
     }
 
     @Test
     void testDelete() {
         commentService.delete(1);
-        verify(commentRepository, times(1)).delete(1);
+        verify(commentRepository, times(1)).deleteById(1L);
     }
 
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.otus.entity.Author;
 import ru.otus.repository.AuthorRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,26 +18,29 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public int create(Author author) {
-        return repository.create(author);
+        Author author1 = repository.save(author);
+        return author1.getId();
     }
 
     @Override
     public void update(Author author) {
-        repository.update(author);
+        repository.save(author);
     }
 
     @Override
     public Author getById(int id) {
-        return repository.getById(id);
+        return repository.findById(id).get();
     }
 
     @Override
     public List<Author> getAll() {
-        return repository.getAll();
+        List<Author> list = new ArrayList<>();
+        repository.findAll().forEach(list::add);
+        return list;
     }
 
     @Override
     public void delete(int id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 }

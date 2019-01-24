@@ -13,6 +13,7 @@ import ru.otus.repository.AuthorRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -37,21 +38,22 @@ class AuthorServiceImplTest {
 
     @Test
     void create() {
+        when(repository.save(author)).thenReturn(author);
         authorService.create(author);
-        verify(repository, times(1)).create(author);
+        verify(repository, times(1)).save(author);
     }
 
     @Test
     void update() {
         authorService.update(author);
-        verify(repository, times(1)).update(author);
+        verify(repository, times(1)).save(author);
     }
 
     @Test
     void getById() {
-        when(repository.getById(1)).thenReturn(author);
+        when(repository.findById(1)).thenReturn(Optional.of(author));
         Author actual = authorService.getById(1);
-        verify(repository, times(1)).getById(1);
+        verify(repository, times(1)).findById(1);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", author.getId())
                 .hasFieldOrPropertyWithValue("name", author.getName())
@@ -60,9 +62,9 @@ class AuthorServiceImplTest {
 
     @Test
     void getAll() {
-        when(repository.getAll()).thenReturn(Collections.singletonList(author));
+        when(repository.findAll()).thenReturn(Collections.singletonList(author));
         List<Author> list = authorService.getAll();
-        verify(repository, times(1)).getAll();
+        verify(repository, times(1)).findAll();
         assertEquals(1, list.size());
         assertThat(list.get(0))
                 .hasFieldOrPropertyWithValue("id", author.getId())
@@ -73,7 +75,7 @@ class AuthorServiceImplTest {
     @Test
     void delete() {
         authorService.delete(1);
-        verify(repository, times(1)).delete(1);
+        verify(repository, times(1)).deleteById(1);
     }
 
 }

@@ -24,7 +24,7 @@ public class Comment {
     @Column(name = "comment_text")
     private String text;
 
-    @ManyToOne(cascade = {CascadeType.REMOVE, CascadeType.DETACH})
+    @ManyToOne
     @JoinColumn(name = "book_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Book book;

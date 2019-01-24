@@ -14,6 +14,7 @@ import ru.otus.entity.Genre;
 import ru.otus.repository.BookRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,21 +40,22 @@ class BookServiceImplTest {
 
     @Test
     void create() {
+        when(repository.save(book)).thenReturn(book);
         bookService.create(book);
-        verify(repository, times(1)).create(book);
+        verify(repository, times(1)).save(book);
     }
 
     @Test
     void update() {
         bookService.update(book);
-        verify(repository, times(1)).update(book);
+        verify(repository, times(1)).save(book);
     }
 
     @Test
     void getById() {
-        when(repository.getById(1)).thenReturn(book);
+        when(repository.findById(1)).thenReturn(Optional.of(book));
         Book actual = bookService.getById(1);
-        verify(repository, times(1)).getById(1);
+        verify(repository, times(1)).findById(1);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "bookname")
@@ -67,9 +69,9 @@ class BookServiceImplTest {
 
     @Test
     void getAll() {
-        when(repository.getAll()).thenReturn(singletonList(book));
+        when(repository.findAll()).thenReturn(singletonList(book));
         List<Book> list = bookService.getAll();
-        verify(repository, times(1)).getAll();
+        verify(repository, times(1)).findAll();
         assertEquals(1, list.size());
         assertThat(list.get(0))
                 .hasFieldOrPropertyWithValue("id", 1)
@@ -85,7 +87,7 @@ class BookServiceImplTest {
     @Test
     void delete() {
         bookService.delete(1);
-        verify(repository, times(1)).delete(1);
+        verify(repository, times(1)).deleteById(1);
     }
 
 }

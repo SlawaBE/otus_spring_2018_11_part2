@@ -1,18 +1,8 @@
 package ru.otus.repository;
 
+import org.springframework.data.repository.CrudRepository;
 import ru.otus.entity.Author;
 
-import java.util.List;
+public interface AuthorRepository extends CrudRepository<Author, Integer> {
 
-public interface AuthorRepository {
-
-    int create(Author author);
-
-    void update(Author author);
-
-    Author getById(int id);
-
-    List<Author> getAll();
-
-    void delete(int id);
 }

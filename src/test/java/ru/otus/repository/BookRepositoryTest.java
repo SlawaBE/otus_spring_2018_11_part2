@@ -3,16 +3,14 @@ package ru.otus.repository;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.shell.jline.InteractiveShellApplicationRunner;
-import org.springframework.shell.jline.ScriptShellApplicationRunner;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.entity.Author;
 import ru.otus.entity.Book;
 import ru.otus.entity.Genre;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -20,22 +18,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {
-        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
-        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false",
-        "spring.datasource.data=testdata.sql"
-})
+@DataJpaTest(properties = "spring.datasource.data=testdata.sql")
 @Transactional
-class BookRepositoryJpaTest {
+class BookRepositoryTest {
 
     @Autowired
-    private BookRepositoryJpa repositoryJpa;
+    private BookRepository repository;
 
     @Test
     void createTest() {
         Book expected = new Book("Test", "description", new Author(1, null, "lastname"), new Genre(1, null));
-        int id = repositoryJpa.create(expected);
-        Book actual = repositoryJpa.getById(id);
+        int id = repository.save(expected).getId();
+        Book actual = repository.findById(id).get();
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", id)
                 .hasFieldOrPropertyWithValue("name", "Test")
@@ -47,8 +41,8 @@ class BookRepositoryJpaTest {
     @Test
     void updateTest() {
         Book expected = new Book(1, "Test", "description", new Author(1, "name", "lastname"), new Genre(1, "name"));
-        repositoryJpa.update(expected);
-        Book actual = repositoryJpa.getById(1);
+        repository.save(expected);
+        Book actual = repository.findById(1).get();
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "Test")
@@ -59,14 +53,15 @@ class BookRepositoryJpaTest {
 
     @Test
     void getAllTest() {
-        List<Book> authors = repositoryJpa.getAll();
-        assertEquals(authors.size(), 2);
+        List<Book> books = new ArrayList<>();
+        repository.findAll().forEach(books::add);
+        assertEquals(books.size(), 2);
     }
 
     @Test
     void getByIdTest() {
-        Book author = repositoryJpa.getById(1);
-        assertThat(author)
+        Book book = repository.findById(1).get();
+        assertThat(book)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "Book_Name1")
                 .hasFieldOrPropertyWithValue("summary", "Book_Summary1")
@@ -79,9 +74,9 @@ class BookRepositoryJpaTest {
 
     @Test
     void deleteTest() {
-        assertNotNull(repositoryJpa.getById(1));
-        repositoryJpa.delete(1);
-        assertThrows(EmptyResultDataAccessException.class, () -> repositoryJpa.getById(1));
+        assertTrue(repository.findById(1).isPresent());
+        repository.deleteById(1);
+        assertFalse(repository.findById(1).isPresent());
     }
 
 }

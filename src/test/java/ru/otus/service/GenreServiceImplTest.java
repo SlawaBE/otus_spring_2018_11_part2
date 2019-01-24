@@ -13,6 +13,7 @@ import ru.otus.repository.GenreRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -37,21 +38,22 @@ class GenreServiceImplTest {
 
     @Test
     void create() {
+        when(repository.save(genre)).thenReturn(genre);
         genreService.create(genre);
-        verify(repository, times(1)).create(genre);
+        verify(repository, times(1)).save(genre);
     }
 
     @Test
     void update() {
         genreService.update(genre);
-        verify(repository, times(1)).update(genre);
+        verify(repository, times(1)).save(genre);
     }
 
     @Test
     void getById() {
-        when(repository.getById(1)).thenReturn(genre);
+        when(repository.findById(1)).thenReturn(Optional.of(genre));
         Genre actual = genreService.getById(1);
-        verify(repository, times(1)).getById(1);
+        verify(repository, times(1)).findById(1);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", genre.getId())
                 .hasFieldOrPropertyWithValue("name", genre.getName());
@@ -59,9 +61,9 @@ class GenreServiceImplTest {
 
     @Test
     void getAll() {
-        when(repository.getAll()).thenReturn(Collections.singletonList(genre));
+        when(repository.findAll()).thenReturn(Collections.singletonList(genre));
         List<Genre> list = genreService.getAll();
-        verify(repository, times(1)).getAll();
+        verify(repository, times(1)).findAll();
         assertThat(list.get(0))
                 .hasFieldOrPropertyWithValue("id", genre.getId())
                 .hasFieldOrPropertyWithValue("name", genre.getName());
@@ -70,7 +72,7 @@ class GenreServiceImplTest {
     @Test
     void delete() {
         genreService.delete(1);
-        verify(repository, times(1)).delete(1);
+        verify(repository, times(1)).deleteById(1);
     }
 
 }

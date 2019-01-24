@@ -1,14 +1,12 @@
 package ru.otus.repository;
 
+import org.springframework.data.repository.CrudRepository;
 import ru.otus.entity.Comment;
 
 import java.util.List;
 
-public interface CommentRepository {
+public interface CommentRepository extends CrudRepository<Comment, Long> {
 
-    void create(Comment comment);
+    List<Comment> findByBookId(int id);
 
-    List<Comment> getByBookId(int id);
-
-    void delete(long id);
 }

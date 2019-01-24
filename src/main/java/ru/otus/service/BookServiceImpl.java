@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.otus.entity.Book;
 import ru.otus.repository.BookRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,27 +18,29 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public int create(Book book) {
-        return repository.create(book);
+        return repository.save(book).getId();
     }
 
     @Override
     public void update(Book book) {
-        repository.update(book);
+        repository.save(book);
     }
 
     @Override
     public Book getById(int id) {
-        return repository.getById(id);
+        return repository.findById(id).get();
     }
 
     @Override
     public List<Book> getAll() {
-        return repository.getAll();
+        List<Book> list = new ArrayList<>();
+        repository.findAll().forEach(list::add);
+        return list;
     }
 
     @Override
     public void delete(int id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 
 }
