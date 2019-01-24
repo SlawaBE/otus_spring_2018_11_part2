@@ -59,14 +59,14 @@ class BookRepositoryJpaTest {
 
     @Test
     void getAllTest() {
-        List<Book> authors = repositoryJpa.getAll();
-        assertEquals(authors.size(), 2);
+        List<Book> books = repositoryJpa.getAll();
+        assertEquals(books.size(), 2);
     }
 
     @Test
     void getByIdTest() {
-        Book author = repositoryJpa.getById(1);
-        assertThat(author)
+        Book book = repositoryJpa.getById(1);
+        assertThat(book)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "Book_Name1")
                 .hasFieldOrPropertyWithValue("summary", "Book_Summary1")

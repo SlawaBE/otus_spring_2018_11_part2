@@ -51,14 +51,14 @@ class GenreRepositoryJpaTest {
 
     @Test
     void getAllTest() {
-        List<Genre> authors = repositoryJpa.getAll();
-        assertEquals(authors.size(), 3);
+        List<Genre> genres = repositoryJpa.getAll();
+        assertEquals(genres.size(), 3);
     }
 
     @Test
     void getByIdTest() {
-        Genre author = repositoryJpa.getById(1);
-        assertThat(author)
+        Genre genre = repositoryJpa.getById(1);
+        assertThat(genre)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "Genre1");
     }
