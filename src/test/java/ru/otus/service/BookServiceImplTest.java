@@ -1,13 +1,11 @@
 package ru.otus.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.entity.Author;
 import ru.otus.entity.Book;
 import ru.otus.entity.Genre;
@@ -21,25 +19,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-@ExtendWith({SpringExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class})
 @Import(BookServiceImpl.class)
 class BookServiceImplTest {
 
-    @Autowired
+    @InjectMocks
     private BookServiceImpl bookService;
 
-    @MockBean
+    @Mock
     private BookRepository repository;
-
-    private Book book;
-
-    @BeforeEach
-    void init() {
-        book = new Book(1, "bookname", "summary", new Author(1, "Test", "Testov"), new Genre(1, "genre"));
-    }
 
     @Test
     void create() {
+        Book book = book();
         when(repository.save(book)).thenReturn(book);
         bookService.create(book);
         verify(repository, times(1)).save(book);
@@ -47,12 +39,14 @@ class BookServiceImplTest {
 
     @Test
     void update() {
+        Book book = book();
         bookService.update(book);
         verify(repository, times(1)).save(book);
     }
 
     @Test
     void getById() {
+        Book book = book();
         when(repository.findById(1)).thenReturn(Optional.of(book));
         Book actual = bookService.getById(1);
         verify(repository, times(1)).findById(1);
@@ -69,6 +63,7 @@ class BookServiceImplTest {
 
     @Test
     void getAll() {
+        Book book = book();
         when(repository.findAll()).thenReturn(singletonList(book));
         List<Book> list = bookService.getAll();
         verify(repository, times(1)).findAll();
@@ -88,6 +83,10 @@ class BookServiceImplTest {
     void delete() {
         bookService.delete(1);
         verify(repository, times(1)).deleteById(1);
+    }
+
+    private Book book() {
+        return new Book(1, "bookname", "summary", new Author(1, "Test", "Testov"), new Genre(1, "genre"));
     }
 
 }

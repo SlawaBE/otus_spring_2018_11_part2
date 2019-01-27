@@ -1,13 +1,11 @@
 package ru.otus.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.entity.Genre;
 import ru.otus.repository.GenreRepository;
 
@@ -18,26 +16,19 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-
-@ExtendWith({SpringExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class})
 @Import(GenreServiceImpl.class)
 class GenreServiceImplTest {
 
-    @Autowired
+    @InjectMocks
     private GenreServiceImpl genreService;
 
-    @MockBean
+    @Mock
     private GenreRepository repository;
-
-    private Genre genre;
-
-    @BeforeEach
-    void init() {
-        genre = new Genre(1, "Test");
-    }
 
     @Test
     void create() {
+        Genre genre = genre();
         when(repository.save(genre)).thenReturn(genre);
         genreService.create(genre);
         verify(repository, times(1)).save(genre);
@@ -45,12 +36,14 @@ class GenreServiceImplTest {
 
     @Test
     void update() {
+        Genre genre = genre();
         genreService.update(genre);
         verify(repository, times(1)).save(genre);
     }
 
     @Test
     void getById() {
+        Genre genre = genre();
         when(repository.findById(1)).thenReturn(Optional.of(genre));
         Genre actual = genreService.getById(1);
         verify(repository, times(1)).findById(1);
@@ -61,6 +54,7 @@ class GenreServiceImplTest {
 
     @Test
     void getAll() {
+        Genre genre = genre();
         when(repository.findAll()).thenReturn(Collections.singletonList(genre));
         List<Genre> list = genreService.getAll();
         verify(repository, times(1)).findAll();
@@ -73,6 +67,10 @@ class GenreServiceImplTest {
     void delete() {
         genreService.delete(1);
         verify(repository, times(1)).deleteById(1);
+    }
+
+    private Genre genre() {
+        return new Genre(1, "Test");
     }
 
 }

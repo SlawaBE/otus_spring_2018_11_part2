@@ -1,40 +1,29 @@
 package ru.otus.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.entity.Comment;
 import ru.otus.repository.CommentRepository;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-
-@ExtendWith({SpringExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class})
 @Import(CommentServiceImpl.class)
 class CommentServiceImplTest {
 
-    @Autowired
+    @InjectMocks
     private CommentServiceImpl commentService;
 
-    @MockBean
+    @Mock
     private CommentRepository commentRepository;
-
-    private Comment comment;
-
-    @BeforeEach
-    void init() {
-        comment = new Comment("user", "text", 1);
-    }
 
     @Test
     void testCreate() {
+        Comment comment = comment();
         when(commentRepository.save(comment)).thenReturn(comment);
         commentService.create(comment);
         verify(commentRepository, times(1)).save(comment);
@@ -50,6 +39,10 @@ class CommentServiceImplTest {
     void testDelete() {
         commentService.delete(1);
         verify(commentRepository, times(1)).deleteById(1L);
+    }
+
+    private Comment comment() {
+        return new Comment("user", "text", 1);
     }
 
 }

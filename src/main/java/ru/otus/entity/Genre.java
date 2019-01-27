@@ -3,15 +3,15 @@ package ru.otus.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "genres")
+@Table(name = "genre")
 public class Genre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "genre_id")
+    @Column(name = "id")
     private int id;
 
-    @Column(name = "genre_name")
+    @Column(name = "name")
     private String name;
 
     public Genre() {

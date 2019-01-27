@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import ru.otus.entity.Genre;
 import ru.otus.repository.GenreRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,9 +32,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public List<Genre> getAll() {
-        List<Genre> list = new ArrayList<>();
-        repository.findAll().forEach(list::add);
-        return list;
+        return repository.findAll();
     }
 
     @Override

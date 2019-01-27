@@ -7,25 +7,25 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "comment")
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id")
+    @Column(name = "id")
     private long id;
 
-    @Column(name = "comment_username")
+    @Column(name = "username")
     private String userName;
 
-    @Column(name = "comment_sendDate")
+    @Column(name = "sendDate")
     private Date sendDate;
 
-    @Column(name = "comment_text")
+    @Column(name = "text")
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "book_id", nullable = false)
+    @JoinColumn(name = "book.id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Book book;
 

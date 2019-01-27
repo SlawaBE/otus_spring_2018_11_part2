@@ -11,12 +11,11 @@ import ru.otus.entity.Author;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest(properties = "spring.datasource.data=testdata.sql")
@@ -53,9 +52,8 @@ class AuthorRepositoryTest {
 
     @Test
     void getAllTest() {
-        List<Author> authors = new ArrayList<>();
-        repositoryJpa.findAll().forEach(authors::add);
-        assertEquals(authors.size(), 3);
+        List<Author> authors = repositoryJpa.findAll();
+        assertThat(authors).asList().hasSize(3);
     }
 
     @Test

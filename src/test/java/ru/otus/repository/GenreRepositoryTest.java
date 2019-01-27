@@ -11,12 +11,11 @@ import ru.otus.entity.Genre;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest(properties = "spring.datasource.data=testdata.sql")
@@ -51,9 +50,8 @@ class GenreRepositoryTest {
 
     @Test
     void getAllTest() {
-        List<Genre> genres = new ArrayList<>();
-        repository.findAll().forEach(genres::add);
-        assertEquals(genres.size(), 3);
+        List<Genre> genres = repository.findAll();
+        assertThat(genres).asList().hasSize(3);
     }
 
     @Test

@@ -6,27 +6,27 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "books")
+@Table(name = "book")
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_id")
+    @Column(name = "id")
     private int id;
 
-    @Column(name = "book_name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "book_summary")
+    @Column(name = "summary")
     private String summary;
 
     @ManyToOne
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "author.id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Author author;
 
     @ManyToOne
-    @JoinColumn(name = "genre_id")
+    @JoinColumn(name = "genre.id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Genre genre;
 

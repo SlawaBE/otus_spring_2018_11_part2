@@ -11,12 +11,11 @@ import ru.otus.entity.Comment;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest(properties = "spring.datasource.data=testdata.sql")
@@ -43,9 +42,8 @@ class CommentRepositoryTest {
 
     @Test
     void testFindByBookId() {
-        List<Comment> comments = new ArrayList<>();
-        comments.addAll(repository.findByBookId(1));
-        assertEquals(2, comments.size());
+        List<Comment> comments = repository.findByBookId(1);
+        assertThat(comments).asList().hasSize(2);
     }
 
     @Test

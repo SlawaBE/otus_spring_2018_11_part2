@@ -17,7 +17,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void create(Comment comment) {
-        repository.save(comment).getId();
+        repository.save(comment);
     }
 
     @Override

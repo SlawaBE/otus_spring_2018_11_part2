@@ -1,8 +1,8 @@
 package ru.otus.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.entity.Genre;
 
-public interface GenreRepository extends CrudRepository<Genre, Integer> {
+public interface GenreRepository extends JpaRepository<Genre, Integer> {
 
 }
