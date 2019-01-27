@@ -1,72 +1,55 @@
 package ru.otus.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.shell.jline.InteractiveShellApplicationRunner;
-import org.springframework.shell.jline.ScriptShellApplicationRunner;
-import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.dao.BookDao;
-import ru.otus.model.Author;
-import ru.otus.model.Book;
-import ru.otus.model.Genre;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
+import ru.otus.entity.Author;
+import ru.otus.entity.Book;
+import ru.otus.entity.Genre;
+import ru.otus.repository.BookRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(properties = {
-        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
-        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
-})
+@ExtendWith({MockitoExtension.class})
+@Import(BookServiceImpl.class)
 class BookServiceImplTest {
 
-    @Autowired
+    @InjectMocks
     private BookServiceImpl bookService;
 
-    @MockBean
-    private BookDao dao;
-
-    private Book book;
-
-    @BeforeEach
-    void init() {
-        book = new Book(1, "bookname", "summary", new Author(1, "Test", "Testov"), new Genre(1, "genre"));
-    }
+    @Mock
+    private BookRepository repository;
 
     @Test
     void create() {
+        Book book = book();
+        when(repository.save(book)).thenReturn(book);
         bookService.create(book);
-        verify(dao, times(1)).create(book);
+        verify(repository, times(1)).save(book);
     }
 
     @Test
     void update() {
-        when(dao.getById(1)).thenReturn(book);
-        bookService.update(new Book(1, "book", "desc", new Author(2), new Genre(2)));
-        verify(dao, times(1)).update(book);
-        assertThat(book)
-                .hasFieldOrPropertyWithValue("id", 1)
-                .hasFieldOrPropertyWithValue("name", "book")
-                .hasFieldOrPropertyWithValue("summary", "desc")
-                .hasFieldOrPropertyWithValue("author.id", 2)
-                .hasFieldOrPropertyWithValue("genre.id", 2);
+        Book book = book();
+        bookService.update(book);
+        verify(repository, times(1)).save(book);
     }
 
     @Test
     void getById() {
-        when(dao.getById(1)).thenReturn(book);
+        Book book = book();
+        when(repository.findById(1)).thenReturn(Optional.of(book));
         Book actual = bookService.getById(1);
-        verify(dao, times(1)).getById(1);
+        verify(repository, times(1)).findById(1);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("name", "bookname")
@@ -80,9 +63,10 @@ class BookServiceImplTest {
 
     @Test
     void getAll() {
-        when(dao.getAll()).thenReturn(singletonList(book));
+        Book book = book();
+        when(repository.findAll()).thenReturn(singletonList(book));
         List<Book> list = bookService.getAll();
-        verify(dao, times(1)).getAll();
+        verify(repository, times(1)).findAll();
         assertEquals(1, list.size());
         assertThat(list.get(0))
                 .hasFieldOrPropertyWithValue("id", 1)
@@ -98,7 +82,11 @@ class BookServiceImplTest {
     @Test
     void delete() {
         bookService.delete(1);
-        verify(dao, times(1)).delete(1);
+        verify(repository, times(1)).deleteById(1);
+    }
+
+    private Book book() {
+        return new Book(1, "bookname", "summary", new Author(1, "Test", "Testov"), new Genre(1, "genre"));
     }
 
 }

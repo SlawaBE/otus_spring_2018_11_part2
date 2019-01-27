@@ -1,48 +1,43 @@
 package ru.otus.service;
 
 import org.springframework.stereotype.Service;
-import ru.otus.dao.BookDao;
-import ru.otus.model.Book;
+import ru.otus.entity.Book;
+import ru.otus.repository.BookRepository;
 
 import java.util.List;
 
 @Service
 public class BookServiceImpl implements BookService {
 
-    private final BookDao bookDao;
+    private final BookRepository repository;
 
-    public BookServiceImpl(BookDao bookDao) {
-        this.bookDao = bookDao;
+    public BookServiceImpl(BookRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public int create(Book book) {
-        return bookDao.create(book);
+        return repository.save(book).getId();
     }
 
     @Override
     public void update(Book book) {
-        Book oldBook = bookDao.getById(book.getId());
-        oldBook.setName(book.getName().isEmpty() ? oldBook.getName() : book.getName());
-        oldBook.setSummary(book.getSummary().isEmpty() ? oldBook.getSummary() : book.getSummary());
-        oldBook.setAuthor(book.getAuthor() == null ? oldBook.getAuthor() : book.getAuthor());
-        oldBook.setGenre(book.getGenre() == null ? oldBook.getGenre() : book.getGenre());
-        bookDao.update(oldBook);
+        repository.save(book);
     }
 
     @Override
     public Book getById(int id) {
-        return bookDao.getById(id);
+        return repository.findById(id).get();
     }
 
     @Override
     public List<Book> getAll() {
-        return bookDao.getAll();
+        return repository.findAll();
     }
 
     @Override
     public void delete(int id) {
-        bookDao.delete(id);
+        repository.deleteById(id);
     }
 
 }

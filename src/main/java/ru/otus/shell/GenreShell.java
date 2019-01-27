@@ -3,7 +3,7 @@ package ru.otus.shell;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import ru.otus.model.Genre;
+import ru.otus.entity.Genre;
 import ru.otus.service.GenreService;
 
 @ShellComponent
@@ -45,12 +45,8 @@ public class GenreShell {
     }
 
     @ShellMethod("удаляет жанр")
-    public String deleteGenre(@ShellOption(help = "id жанра") int id) {
-        if (genreService.delete(id)) {
-            return "Жанр успешно удалён";
-        } else {
-            return "Нельзя удалить жанр, пока есть связанные с ним книги";
-        }
+    public void deleteGenre(@ShellOption(help = "id жанра") int id) {
+        genreService.delete(id);
     }
 
     private String getInfo(Genre genre) {

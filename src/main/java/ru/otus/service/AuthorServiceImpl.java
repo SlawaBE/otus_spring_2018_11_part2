@@ -1,45 +1,42 @@
 package ru.otus.service;
 
 import org.springframework.stereotype.Service;
-import ru.otus.dao.AuthorDao;
-import ru.otus.model.Author;
+import ru.otus.entity.Author;
+import ru.otus.repository.AuthorRepository;
 
 import java.util.List;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
 
-    private final AuthorDao dao;
+    private final AuthorRepository repository;
 
-    public AuthorServiceImpl(AuthorDao dao) {
-        this.dao = dao;
+    public AuthorServiceImpl(AuthorRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public int create(Author author) {
-        return dao.create(author);
+        return repository.save(author).getId();
     }
 
     @Override
     public void update(Author author) {
-        Author oldAuthor = dao.getById(author.getId());
-        oldAuthor.setName(author.getName().isEmpty() ? oldAuthor.getName() : author.getName());
-        oldAuthor.setLastName(author.getLastName().isEmpty() ? oldAuthor.getLastName() : author.getLastName());
-        dao.update(oldAuthor);
+        repository.save(author);
     }
 
     @Override
     public Author getById(int id) {
-        return dao.getById(id);
+        return repository.findById(id).get();
     }
 
     @Override
     public List<Author> getAll() {
-        return dao.getAll();
+        return repository.findAll();
     }
 
     @Override
-    public boolean delete(int id) {
-        return dao.delete(id);
+    public void delete(int id) {
+        repository.deleteById(id);
     }
 }

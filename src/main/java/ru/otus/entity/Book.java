@@ -1,16 +1,37 @@
-package ru.otus.model;
+package ru.otus.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "book")
 public class Book {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "summary")
     private String summary;
 
+    @ManyToOne
+    @JoinColumn(name = "author.id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Author author;
 
+    @ManyToOne
+    @JoinColumn(name = "genre.id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Genre genre;
+
+    public Book() {
+    }
 
     public Book(String name, String summary, Author author, Genre genre) {
         this.name = name;

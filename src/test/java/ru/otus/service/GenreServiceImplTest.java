@@ -1,62 +1,52 @@
 package ru.otus.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.shell.jline.InteractiveShellApplicationRunner;
-import org.springframework.shell.jline.ScriptShellApplicationRunner;
-import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.dao.GenreDao;
-import ru.otus.model.Genre;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
+import ru.otus.entity.Genre;
+import ru.otus.repository.GenreRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(properties = {
-        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
-        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
-})
+@ExtendWith({MockitoExtension.class})
+@Import(GenreServiceImpl.class)
 class GenreServiceImplTest {
 
-    @Autowired
+    @InjectMocks
     private GenreServiceImpl genreService;
 
-    @MockBean
-    private GenreDao dao;
-
-    private Genre genre;
-
-    @BeforeEach
-    void init() {
-        genre = new Genre(1, "Test");
-    }
+    @Mock
+    private GenreRepository repository;
 
     @Test
     void create() {
+        Genre genre = genre();
+        when(repository.save(genre)).thenReturn(genre);
         genreService.create(genre);
-        verify(dao, times(1)).create(genre);
+        verify(repository, times(1)).save(genre);
     }
 
     @Test
     void update() {
+        Genre genre = genre();
         genreService.update(genre);
-        verify(dao, times(1)).update(genre);
+        verify(repository, times(1)).save(genre);
     }
 
     @Test
     void getById() {
-        when(dao.getById(1)).thenReturn(genre);
+        Genre genre = genre();
+        when(repository.findById(1)).thenReturn(Optional.of(genre));
         Genre actual = genreService.getById(1);
-        verify(dao, times(1)).getById(1);
+        verify(repository, times(1)).findById(1);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", genre.getId())
                 .hasFieldOrPropertyWithValue("name", genre.getName());
@@ -64,9 +54,10 @@ class GenreServiceImplTest {
 
     @Test
     void getAll() {
-        when(dao.getAll()).thenReturn(Collections.singletonList(genre));
+        Genre genre = genre();
+        when(repository.findAll()).thenReturn(Collections.singletonList(genre));
         List<Genre> list = genreService.getAll();
-        verify(dao, times(1)).getAll();
+        verify(repository, times(1)).findAll();
         assertThat(list.get(0))
                 .hasFieldOrPropertyWithValue("id", genre.getId())
                 .hasFieldOrPropertyWithValue("name", genre.getName());
@@ -75,7 +66,11 @@ class GenreServiceImplTest {
     @Test
     void delete() {
         genreService.delete(1);
-        verify(dao, times(1)).delete(1);
+        verify(repository, times(1)).deleteById(1);
+    }
+
+    private Genre genre() {
+        return new Genre(1, "Test");
     }
 
 }
