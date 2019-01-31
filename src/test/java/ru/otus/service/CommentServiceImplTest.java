@@ -31,18 +31,18 @@ class CommentServiceImplTest {
 
     @Test
     void testGetByBookId() {
-        commentService.getByBookId(1);
-        verify(commentRepository, times(1)).findByBookId(1);
+        commentService.getByBookId("bookId");
+        verify(commentRepository, times(1)).findByBookId("bookId");
     }
 
     @Test
     void testDelete() {
-        commentService.delete(1);
-        verify(commentRepository, times(1)).deleteById(1L);
+        commentService.delete("id");
+        verify(commentRepository, times(1)).deleteById("id");
     }
 
     private Comment comment() {
-        return new Comment("user", "text", 1);
+        return new Comment("user", "text", "bookId");
     }
 
 }

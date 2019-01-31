@@ -16,7 +16,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public int create(Book book) {
+    public String create(Book book) {
         return repository.save(book).getId();
     }
 
@@ -26,7 +26,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book getById(int id) {
+    public Book getById(String id) {
         return repository.findById(id).get();
     }
 
@@ -36,8 +36,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(String id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<Book> findByAuthor(String name) {
+        return repository.findByAuthor(name);
+    }
+
+    @Override
+    public List<Book> findByGenre(String genre) {
+        return repository.findByGenre(genre);
     }
 
 }

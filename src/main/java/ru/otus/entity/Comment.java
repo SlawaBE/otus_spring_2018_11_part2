@@ -1,38 +1,30 @@
 package ru.otus.entity;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.util.Date;
 
-@Entity
-@Table(name = "comment")
-public class Comment {
+public @Document("comments")
+class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private long id;
+    private String id;
 
-    @Column(name = "username")
     private String userName;
 
-    @Column(name = "sendDate")
     private Date sendDate;
 
-    @Column(name = "text")
     private String text;
 
-    @ManyToOne
-    @JoinColumn(name = "book.id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @DBRef
     private Book book;
 
     public Comment() {
     }
 
-    public Comment(String userName, String text, int bookId) {
+    public Comment(String userName, String text, String bookId) {
         this.userName = userName;
         this.sendDate = new Date();
         this.text = text;
@@ -40,11 +32,11 @@ public class Comment {
         this.book.setId(bookId);
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

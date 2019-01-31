@@ -21,12 +21,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> getByBookId(int id) {
+    public List<Comment> getByBookId(String id) {
         return repository.findByBookId(id);
+
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(String id) {
         repository.deleteById(id);
     }
+
 }

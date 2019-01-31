@@ -1,58 +1,47 @@
 package ru.otus.entity;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
+import java.util.List;
 
-@Entity
-@Table(name = "book")
+@Document("books")
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    private String id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "summary")
     private String summary;
 
-    @ManyToOne
-    @JoinColumn(name = "author.id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Author author;
+    private List<String> authors;
 
-    @ManyToOne
-    @JoinColumn(name = "genre.id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Genre genre;
+    private List<String> genres;
 
     public Book() {
     }
 
-    public Book(String name, String summary, Author author, Genre genre) {
+    public Book(String name, String summary, List<String> authors, List<String> genres) {
         this.name = name;
         this.summary = summary;
-        this.author = author;
-        this.genre = genre;
+        this.authors = authors;
+        this.genres = genres;
     }
 
-    public Book(int id, String name, String summary, Author author, Genre genre) {
+    public Book(String id, String name, String summary, List<String> authors, List<String> genres) {
         this.id = id;
         this.name = name;
         this.summary = summary;
-        this.author = author;
-        this.genre = genre;
+        this.authors = authors;
+        this.genres = genres;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -72,20 +61,20 @@ public class Book {
         this.summary = summary;
     }
 
-    public Author getAuthor() {
-        return author;
+    public List<String> getAuthors() {
+        return authors;
     }
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    public void setAuthors(List<String> authors) {
+        this.authors = authors;
     }
 
-    public Genre getGenre() {
-        return genre;
+    public List<String> getGenres() {
+        return genres;
     }
 
-    public void setGenre(Genre genre) {
-        this.genre = genre;
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
     }
 
 }
