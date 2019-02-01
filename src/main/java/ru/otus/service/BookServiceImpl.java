@@ -47,7 +47,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> findByGenre(String genre) {
-        return repository.findByGenre(genre);
+        return repository.findByGenresContaining(genre);
     }
 
 }

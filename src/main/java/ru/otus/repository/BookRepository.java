@@ -11,7 +11,6 @@ public interface BookRepository extends MongoRepository<Book, String> {
     @Query("{ 'authors' : { $regex: ?0 } }")
     List<Book> findByAuthor(String author);
 
-    @Query("{ 'genres' : ?0 }")
-    List<Book> findByGenre(String genre);
+    List<Book> findByGenresContaining(String genre);
 
 }

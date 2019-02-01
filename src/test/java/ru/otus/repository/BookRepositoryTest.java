@@ -2,8 +2,6 @@ package ru.otus.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,7 +17,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@ExtendWith({MockitoExtension.class})
 @DataMongoTest
 class BookRepositoryTest {
 
@@ -108,7 +105,7 @@ class BookRepositoryTest {
 
     @Test
     void testFindByGenre() {
-        List<Book> list = repository.findByGenre("Genre1");
+        List<Book> list = repository.findByGenresContaining("Genre1");
         assertThat(list).asList().hasSize(1);
     }
 
