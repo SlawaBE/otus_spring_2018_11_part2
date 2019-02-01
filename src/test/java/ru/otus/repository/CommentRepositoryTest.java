@@ -1,62 +1,90 @@
 package ru.otus.repository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import ru.otus.entity.Book;
 import ru.otus.entity.Comment;
 
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest(properties = "spring.datasource.data=testdata.sql")
-@Transactional
+@DataMongoTest
 class CommentRepositoryTest {
 
     @Autowired
-    private TestEntityManager em;
+    private MongoTemplate mongoTemplate;
 
     @Autowired
     private CommentRepository repository;
 
+    @BeforeEach
+    void init() {
+        mongoTemplate.dropCollection("books");
+        mongoTemplate.dropCollection("comments");
+        mongoTemplate.insert(new Book("b1", "Book_Name1", "Book_Summary1", singletonList("Author1"), singletonList("Genre1")));
+        mongoTemplate.insert(new Book("b2", "Book_Name2", "Book_Summary2", singletonList("Author2"), singletonList("Genre2")));
+        mongoTemplate.insert(new Comment("user1", "text1", "b1"));
+        mongoTemplate.insert(new Comment("user2", "text2", "b1"));
+    }
+
     @Test
     void testCreate() {
-        Comment expected = new Comment("user", "text", 2);
+        Comment expected = comment();
         repository.save(expected);
         Comment actual = getComment(expected.getId());
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("userName", "user")
                 .hasFieldOrPropertyWithValue("text", "text")
-                .hasFieldOrPropertyWithValue("book.id", 2)
+                .hasFieldOrPropertyWithValue("book.id", "b1")
                 .hasNoNullFieldsOrProperties();
     }
 
     @Test
-    void testFindByBookId() {
-        List<Comment> comments = repository.findByBookId(1);
-        assertThat(comments).asList().hasSize(2);
+    void testDelete() {
+        Comment comment = mongoTemplate.save(comment());
+        assertNotNull(getComment(comment.getId()));
+        repository.deleteById(comment.getId());
+        assertNull(getComment(comment.getId()));
     }
 
     @Test
-    void testDelete() {
-        assertNotNull(getComment(1));
-        repository.deleteById(1L);
-        assertThrows(NoResultException.class, () -> getComment(1L));
+    void testFindByBookId() {
+        List<Comment> list = repository.findByBookId("b1");
+        assertThat(list).asList()
+                .hasSize(2);
     }
 
-    private Comment getComment(long id) {
-        TypedQuery<Comment> query = em.getEntityManager().createQuery("SELECT c from Comment c where id = :id", Comment.class);
-        query.setParameter("id", id);
-        return query.getSingleResult();
+    @Test
+    void testDeleteByBookId() {
+        repository.deleteByBookId("b1");
+        List<Comment> list = getCommentsByBookId("b1");
+        assertThat(list).asList()
+                .hasSize(0);
+    }
+
+    private Comment getComment(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("id").is(id));
+        return mongoTemplate.findOne(query, Comment.class);
+    }
+
+    private List<Comment> getCommentsByBookId(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("book.id").is(id));
+        return mongoTemplate.find(query, Comment.class);
+    }
+
+    private Comment comment() {
+        return new Comment("user", "text", "b1");
     }
 
 }

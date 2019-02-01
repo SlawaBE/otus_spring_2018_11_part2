@@ -19,20 +19,20 @@ public class CommentShell {
 
     @ShellMethod("создать комментарий")
     public void createComment(
-            @ShellOption(help = "id книги") int bookId,
+            @ShellOption(help = "id книги") String bookId,
             @ShellOption(help = "автор комментария")String userName,
             @ShellOption(help = "текст комментария") String text) {
         commentService.create(new Comment(userName, text, bookId));
     }
 
     @ShellMethod("Показать комментарии к книге")
-    public String getComments(@ShellOption(help = "id книги") int id) {
+    public String getComments(@ShellOption(help = "id книги") String id) {
         List<Comment> comments = commentService.getByBookId(id);
         return getInfo(comments);
     }
 
     @ShellMethod("удалить комментарий")
-    public void deleteComment(@ShellOption(help = "id комментария") long id) {
+    public void deleteComment(@ShellOption(help = "id комментария") String id) {
         commentService.delete(id);
     }
 

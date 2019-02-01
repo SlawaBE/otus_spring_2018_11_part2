@@ -8,8 +8,8 @@ public interface CommentService {
 
     void create(Comment comment);
 
-    List<Comment> getByBookId(int id);
+    List<Comment> getByBookId(String id);
 
-    void delete(long id);
+    void delete(String id);
 
 }
