@@ -22,6 +22,7 @@ class Comment {
     private Book book;
 
     public Comment() {
+        this.sendDate = new Date();
     }
 
     public Comment(String userName, String text, String bookId) {
