@@ -71,7 +71,7 @@ public class BookController {
         return "redirect:/book/view?id=" + comment.getBook().getId();
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleError(RuntimeException ex) {
         ex.printStackTrace();
         return ResponseEntity.badRequest().body("Произошла непредвиденная ошибка!<br><a href=\"/\">Вернуться на главную</a>");
