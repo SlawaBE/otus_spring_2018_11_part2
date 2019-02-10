@@ -26,7 +26,7 @@ public class BookController {
         this.commentService = commentService;
     }
 
-    @RequestMapping(path = "/", method = GET)
+    @RequestMapping(path = {"/", "/books"}, method = GET)
     public String booksList(Model model) {
         model.addAttribute("books", bookService.getAll());
         return "list";
@@ -69,12 +69,6 @@ public class BookController {
     public String addComment(@ModelAttribute Comment comment) {
         commentService.create(comment);
         return "redirect:/book/view?id=" + comment.getBook().getId();
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleError(RuntimeException ex) {
-        ex.printStackTrace();
-        return ResponseEntity.badRequest().body("Произошла непредвиденная ошибка!<br><a href=\"/\">Вернуться на главную</a>");
     }
 
 }

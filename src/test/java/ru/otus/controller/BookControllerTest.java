@@ -83,14 +83,6 @@ class BookControllerTest {
                 .andExpect(status().isFound());
     }
 
-    @Test
-    void handleError() throws Exception {
-        when(bookService.getById("id")).thenThrow(RuntimeException.class);
-        mvc.perform(get("/book/view")
-                .param("id", "id"))
-                .andExpect(status().isBadRequest());
-    }
-
     private Book book() {
         return new Book("name", "summary", singletonList("author"), singletonList("genre"));
     }
