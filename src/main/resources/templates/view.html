@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Информация о книге</title>
+    <link rel="stylesheet" th:href="@{/style.css}" href="../public/style.css">
+</head>
+<body>
+
+<div id="page">
+    <div class="row">
+        <b th:text="${book.id}">id</b>
+    </div>
+
+    <div class="row">
+        <h3 th:text="${book.name}">Название книги</h3>
+    </div>
+
+    <div>
+        <b>Жанры:</b>
+        <ul>
+            <li th:each="genre : ${book.genres}" th:text="${genre}">
+                жанр
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        <b>Авторы:</b>
+        <ul>
+            <li th:each="author : ${book.authors}" th:text="${author}">
+                автор
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        <b>Описание:</b>
+        <p th:text="${book.summary}">
+            Много текста
+        </p>
+    </div>
+
+    <form th:action="@{/book/edit(id=${book.id})}" method="get" action="edit.html">
+        <input type="hidden" name="id" th:value="${book.id}">
+        <input type="submit" value="Редактировать"/>
+    </form>
+    <form th:action="@{/book/delete(id=${book.id})}" method="post" action="list.html">
+        <input type="submit" value="Удалить"/>
+    </form>
+
+    <div id="comments">
+        <h3>Комментарии:</h3>
+        <div class="comment" th:each="comment : ${comments}">
+            <div>
+                <span th:text="${comment.sendDate}"/>
+                <span th:text="${comment.userName}"/>
+            </div>
+            <div>
+                <p class="comment-text" th:text="${comment.text}"></p>
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{/book/comment}" method="post" action="#">
+        <fieldset>
+            <legend>Добавить комментарий</legend>
+            <input type="hidden" name="book.id" th:value="${book.id}">
+            <div class="row">
+                <label for="name-input">Ваше имя</label>
+                <input id="name-input" name="userName">
+            </div>
+            <div class="row">
+                <label for="text-input">Текст комментария:</label>
+                <div>
+                    <textarea id="text-input" name="text"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <input type="submit" value="Добавить">
+            </div>
+        </fieldset>
+    </form>
+
+    <div>
+        <a href="list.html" th:href="@{/}">Вернуться к списку</a>
+    </div>
+</div>
+
+</body>
+</html>
