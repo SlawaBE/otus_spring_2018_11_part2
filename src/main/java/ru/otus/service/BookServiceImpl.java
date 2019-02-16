@@ -16,13 +16,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public String create(Book book) {
-        return repository.save(book).getId();
-    }
-
-    @Override
-    public void update(Book book) {
-        repository.save(book);
+    public Book update(Book book) {
+        return repository.save(book);
     }
 
     @Override
