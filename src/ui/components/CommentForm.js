@@ -1,6 +1,6 @@
 import React from 'react'
 
-class CommentForm extends React.Component {
+export default class CommentForm extends React.Component {
 
     constructor(props) {
         super(props);
@@ -20,7 +20,7 @@ class CommentForm extends React.Component {
             text: this.state.text,
             bookId: this.props.bookId
         };
-        fetch('/api/comment', {
+        fetch(`/api/book/${this.props.bookId}/comment`, {
             method: 'POST',
             body: JSON.stringify(comment),
             headers: { 'Content-Type': 'application/json' }
@@ -57,5 +57,3 @@ class CommentForm extends React.Component {
     }
 
 }
-
-export default CommentForm;

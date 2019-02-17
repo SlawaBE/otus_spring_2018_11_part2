@@ -1,6 +1,6 @@
 import React from 'react';
 
-class InputList extends React.Component {
+export default class InputList extends React.Component {
 
     render() {
         var { list } = this.props;
@@ -34,5 +34,3 @@ class InputList extends React.Component {
     }
 
 }
-
-export default InputList;

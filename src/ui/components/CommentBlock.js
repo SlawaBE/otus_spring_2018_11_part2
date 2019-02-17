@@ -8,7 +8,7 @@ const UserName = styled.span`
     font-weight: bold;
 `
 
-class CommentBlock extends React.Component {
+export default class CommentBlock extends React.Component {
 
     constructor(props) {
         super(props);
@@ -19,7 +19,7 @@ class CommentBlock extends React.Component {
 
     componentDidMount() {
         const id = this.props.bookId;
-        fetch(`/api/comments?bookId=${id}`, {
+        fetch(`/api/book/${id}/comments`, {
             method: 'GET',
         }).then((response) => {
             return response.json();
@@ -37,6 +37,7 @@ class CommentBlock extends React.Component {
 
     render() {
         const { comments } = this.state;
+        const { bookId } = this.props;
         return (
             <React.Fragment>
                 <div id="comments">
@@ -44,14 +45,14 @@ class CommentBlock extends React.Component {
                     {!comments ? <Loader /> : (
                         <React.Fragment>
                             {
-                                comments.map((comment, index) => (
+                                comments.map(({ sendDate, userName, text }, index) => (
                                     <div className="comment" key={index}>
                                         <div>
-                                            <span>{comment.sendDate}</span>
-                                            <UserName>{comment.userName}</UserName>
+                                            <span>{sendDate}</span>
+                                            <UserName>{userName}</UserName>
                                         </div>
                                         <div>
-                                            <p className="comment-text">{comment.text}</p>
+                                            <p className="comment-text">{text}</p>
                                         </div>
                                     </div>
                                 ))
@@ -60,12 +61,10 @@ class CommentBlock extends React.Component {
                     )}
                 </div>
 
-                <CommentForm bookId={this.props.bookId} addComment={this.addComment} />
+                <CommentForm bookId={bookId} addComment={this.addComment} />
 
             </React.Fragment>
         )
     }
 
 }
-
-export default CommentBlock;

@@ -2,7 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import BookQuickView from './BookQuickView';
 
-class BookList extends React.Component {
+export default class BookList extends React.Component {
 
     constructor(props) {
         super(props);
@@ -38,5 +38,3 @@ class BookList extends React.Component {
     }
 
 }
-
-export default BookList;

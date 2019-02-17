@@ -2,7 +2,7 @@ import React from 'react';
 import Loader from './Loader';
 import DataList from './DataList';
 
-class BookInfo extends React.Component {
+export default class BookInfo extends React.Component {
 
     constructor(props) {
         super(props);
@@ -27,29 +27,30 @@ class BookInfo extends React.Component {
 
     render() {
         const { book } = this.state;
+        if (!book) {
+            return <Loader />
+        }
+        const { id, name, summary, genres, authors } = book;
         return (
-            !book ? <Loader /> :
-                <React.Fragment>
-                    <div className="row">
-                        <b>{book.id}</b>
-                    </div>
+            <React.Fragment>
+                <div className="row">
+                    <b>{id}</b>
+                </div>
 
-                    <div className="row">
-                        <h3>{book.name}</h3>
-                    </div>
+                <div className="row">
+                    <h3>{name}</h3>
+                </div>
 
-                    <DataList title='Жанры:' list={book.genres} />
+                <DataList title='Жанры:' list={genres} />
 
-                    <DataList title='Авторы' list={book.authors} />
+                <DataList title='Авторы' list={authors} />
 
-                    <div>
-                        <b>Описание:</b>
-                        <p>{book.summary}</p>
-                    </div>
-                </React.Fragment>
+                <div>
+                    <b>Описание:</b>
+                    <p>{summary}</p>
+                </div>
+            </React.Fragment>
         )
     }
 
 }
-
-export default BookInfo;

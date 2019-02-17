@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import InputList from './InputList';
 
-class BookEditForm extends React.Component {
+export default class BookEditForm extends React.Component {
 
     constructor(props) {
         super(props);
@@ -102,5 +102,3 @@ class BookEditForm extends React.Component {
         )
     }
 }
-
-export default BookEditForm;

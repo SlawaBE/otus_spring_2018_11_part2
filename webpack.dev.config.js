@@ -26,10 +26,10 @@ module.exports = {
             app.post('/api/book', (req, res) => res.send(
                 { "id": "5c666ea32fcc6d154c531e44", "name": "Автостопом по галактике", "summary": "Путеводитель для путешествующих по галактике автостопом", "authors": ["Дуглас Адамс"], "genres": ["фантастика"] }
             ));
-            app.get('/api/comments', (req, res) => res.send(
+            app.get('/api/book/5c666ea32fcc6d154c531e44/comments', (req, res) => res.send(
                 [{ "id": "5c666ea32fcc6d154c531e47", "userName": "test", "sendDate": "2019-02-15T07:47:47.930+0000", "text": "Главный вопрос жизни, Вселенной и всего такого?", "book": { "id": "5c666ea32fcc6d154c531e44", "name": "Автостопом по галактике", "summary": "Путеводитель для путешествующих по галактике автостопом", "authors": ["Дуглас Адамс"], "genres": ["фантастика"] } }, { "id": "5c666ea32fcc6d154c531e48", "userName": "Deep Thought", "sendDate": "2019-02-15T07:47:47.930+0000", "text": "42", "book": { "id": "5c666ea32fcc6d154c531e44", "name": "Автостопом по галактике", "summary": "Путеводитель для путешествующих по галактике автостопом", "authors": ["Дуглас Адамс"], "genres": ["фантастика"] } }]
             ));
-            app.post('/api/comment', (req, res) => res.send(
+            app.post('/api/book/5c666ea32fcc6d154c531e44/comment', (req, res) => res.send(
                 { "id": "5c666ea32fcc6d154c531e47", "userName": "test", "sendDate": "2019-02-15T07:47:47.930+0000", "text": "Главный вопрос жизни, Вселенной и всего такого?", "book": { "id": "5c666ea32fcc6d154c531e44", "name": "Автостопом по галактике", "summary": "Путеводитель для путешествующих по галактике автостопом", "authors": ["Дуглас Адамс"], "genres": ["фантастика"] } }
             ));
         }

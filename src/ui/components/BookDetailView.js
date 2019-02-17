@@ -3,7 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import BookInfo from './BookInfo';
 import CommentBlock from './CommentBlock';
 
-class BookDetailView extends React.Component {
+export default class BookDetailView extends React.Component {
 
     constructor(props) {
         super(props);
@@ -24,8 +24,9 @@ class BookDetailView extends React.Component {
     }
 
     render() {
-        if (this.state.redirect) {
-            return <Redirect to={this.state.redirect} />;
+        const { redirect } = this.state;
+        if (redirect) {
+            return <Redirect to={redirect} />;
         }
         const bookId = this.props.match.params.id;
         return (
@@ -41,10 +42,8 @@ class BookDetailView extends React.Component {
                     <input type="submit" value='Удалить' onClick={this.handleDelete} />
                 </div>
 
-                <CommentBlock bookId={this.props.match.params.id} />
+                <CommentBlock bookId={bookId} />
             </React.Fragment>
         );
     }
 }
-
-export default BookDetailView;
