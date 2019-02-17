@@ -1,7 +1,14 @@
 package ru.otus.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Date;
 
+@NoArgsConstructor
+@Getter
+@Setter
 public class CommentDto {
 
     private String userName;
@@ -12,44 +19,10 @@ public class CommentDto {
 
     private Date sendDate;
 
-    public CommentDto() {
-    }
-
     public CommentDto(String userName, String text, Date sendDate) {
         this.userName = userName;
         this.text = text;
         this.sendDate = sendDate;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(String bookId) {
-        this.bookId = bookId;
-    }
-
-    public Date getSendDate() {
-        return sendDate;
-    }
-
-    public void setSendDate(Date sendDate) {
-        this.sendDate = sendDate;
-    }
 }
