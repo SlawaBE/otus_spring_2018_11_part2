@@ -1,12 +1,11 @@
 package ru.otus.service;
 
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.dto.CommentDto;
 import ru.otus.mapper.CommentMapper;
 import ru.otus.repository.CommentRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class CommentServiceImpl implements CommentService {
@@ -21,17 +20,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto create(CommentDto comment) {
-        return mapper.convert(repository.save(mapper.convert(comment)));
+    public Mono<CommentDto> create(CommentDto commentDto) {
+        return repository.save(mapper.convert(commentDto)
+        ).flatMap(comment -> Mono.just(comment).map(mapper::convert));
     }
 
     @Override
-    public List<CommentDto> getByBookId(String id) {
-        return repository.findByBookId(id).stream()
-                .map(mapper::convert)
-                .collect(Collectors.toList()
-        );
-
+    public Flux<CommentDto> getByBookId(String id) {
+        return repository.findByBookId(id).flatMap(comment -> Flux.just(comment).map(mapper::convert));
     }
 
     @Override

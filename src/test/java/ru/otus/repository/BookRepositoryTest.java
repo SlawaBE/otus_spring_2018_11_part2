@@ -36,7 +36,7 @@ class BookRepositoryTest {
     @Test
     void createTest() {
         Book expected = book();
-        String id = repository.save(expected).getId();
+        String id = repository.save(expected).block().getId();
         Book actual = getBook(id);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", id)
@@ -48,40 +48,26 @@ class BookRepositoryTest {
 
     @Test
     void updateTest() {
-        Book expected = new Book("id1", "Test", "description", getAuthors(), getGenres());
-        repository.save(expected);
+        Book expected = new Book("id1", "Test", "description", authors(), genres());
+        repository.save(expected).block();
         Book actual = getBook("id1");
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", "id1")
                 .hasFieldOrPropertyWithValue("name", "Test")
                 .hasFieldOrPropertyWithValue("summary", "description")
-                .hasFieldOrPropertyWithValue("authors", getAuthors())
-                .hasFieldOrPropertyWithValue("genres", getGenres());
-    }
-
-    private List<String> getAuthors() {
-        List<String> authors = new ArrayList<>();
-        authors.add("author1");
-        authors.add("author2");
-        return authors;
-    }
-
-    private List<String> getGenres() {
-        List<String> authors = new ArrayList<>();
-        authors.add("genre1");
-        authors.add("genre2");
-        return authors;
+                .hasFieldOrPropertyWithValue("authors", authors())
+                .hasFieldOrPropertyWithValue("genres", genres());
     }
 
     @Test
     void getAllTest() {
-        List<Book> books = repository.findAll();
+        List<Book> books = repository.findAll().collectList().block();
         assertThat(books).asList().hasSize(2);
     }
 
     @Test
     void getByIdTest() {
-        Book book = repository.findById("id1").get();
+        Book book = repository.findById("id1").block();
         assertThat(book)
                 .hasFieldOrPropertyWithValue("id", "id1")
                 .hasFieldOrPropertyWithValue("name", "Book_Name1")
@@ -93,19 +79,19 @@ class BookRepositoryTest {
     @Test
     void deleteTest() {
         assertNotNull(getBook("id1"));
-        repository.deleteById("id1");
+        repository.deleteById("id1").block();
         assertNull(getBook("id1"));
     }
 
     @Test
     void testFindByAuthor() {
-        List<Book> list = repository.findByAuthor("Author1");
+        List<Book> list = repository.findByAuthor("Author1").collectList().block();
         assertThat(list).asList().hasSize(1);
     }
 
     @Test
     void testFindByGenre() {
-        List<Book> list = repository.findByGenresContaining("Genre1");
+        List<Book> list = repository.findByGenresContaining("Genre1").collectList().block();
         assertThat(list).asList().hasSize(1);
     }
 
@@ -118,5 +104,20 @@ class BookRepositoryTest {
     private Book book() {
         return new Book("book", "summary", singletonList("author"), singletonList("genre"));
     }
+
+    private List<String> authors() {
+        List<String> authors = new ArrayList<>();
+        authors.add("author1");
+        authors.add("author2");
+        return authors;
+    }
+
+    private List<String> genres() {
+        List<String> authors = new ArrayList<>();
+        authors.add("genre1");
+        authors.add("genre2");
+        return authors;
+    }
+
 
 }
