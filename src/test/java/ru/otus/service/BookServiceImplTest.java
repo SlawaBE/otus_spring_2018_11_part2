@@ -26,14 +26,6 @@ class BookServiceImplTest {
     private BookRepository repository;
 
     @Test
-    void create() {
-        Book book = book();
-        when(repository.save(book)).thenReturn(book);
-        bookService.create(book);
-        verify(repository, times(1)).save(book);
-    }
-
-    @Test
     void update() {
         Book book = book();
         bookService.update(book);

@@ -1,14 +1,14 @@
 package ru.otus.service;
 
-import ru.otus.entity.Comment;
+import ru.otus.dto.CommentDto;
 
 import java.util.List;
 
 public interface CommentService {
 
-    void create(Comment comment);
+    CommentDto create(CommentDto comment);
 
-    List<Comment> getByBookId(String id);
+    List<CommentDto> getByBookId(String id);
 
     void delete(String id);
 

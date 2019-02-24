@@ -4,10 +4,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
+import ru.otus.dto.CommentDto;
 import ru.otus.entity.Comment;
+import ru.otus.mapper.CommentMapper;
 import ru.otus.repository.CommentRepository;
+
+import java.util.Date;
 
 import static org.mockito.Mockito.*;
 
@@ -21,12 +26,14 @@ class CommentServiceImplTest {
     @Mock
     private CommentRepository commentRepository;
 
+    @Spy
+    private CommentMapper mapper;
+
     @Test
     void testCreate() {
-        Comment comment = comment();
-        when(commentRepository.save(comment)).thenReturn(comment);
-        commentService.create(comment);
-        verify(commentRepository, times(1)).save(comment);
+        when(commentRepository.save(any(Comment.class))).thenReturn(comment());
+        commentService.create(commentDto());
+        verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
     @Test
@@ -43,6 +50,10 @@ class CommentServiceImplTest {
 
     private Comment comment() {
         return new Comment("user", "text", "bookId");
+    }
+
+    private CommentDto commentDto() {
+        return new CommentDto("user", "text", new Date());
     }
 
 }
