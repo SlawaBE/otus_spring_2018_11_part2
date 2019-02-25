@@ -1,16 +1,15 @@
 package ru.otus.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
 import ru.otus.entity.Book;
 
-import java.util.List;
-
-public interface BookRepository extends MongoRepository<Book, String> {
+public interface BookRepository extends ReactiveMongoRepository<Book, String> {
 
     @Query("{ 'authors' : { $regex: ?0 } }")
-    List<Book> findByAuthor(String author);
+    Flux<Book> findByAuthor(String author);
 
-    List<Book> findByGenresContaining(String genre);
+    Flux<Book> findByGenresContaining(String genre);
 
 }

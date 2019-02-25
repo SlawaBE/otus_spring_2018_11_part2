@@ -1,13 +1,12 @@
 package ru.otus.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.dto.CommentDto;
 import ru.otus.entity.Book;
 import ru.otus.service.BookService;
 import ru.otus.service.CommentService;
-
-import java.util.List;
 
 @RestController
 public class BookController {
@@ -22,33 +21,32 @@ public class BookController {
     }
 
     @GetMapping(path = "/api/books")
-    public List<Book> booksList() {
+    public Flux<Book> booksList() {
         return bookService.getAll();
     }
 
     @GetMapping(path = "/api/book")
-    public Book getBook(@RequestParam("id") String id) {
+    public Mono<Book> getBook(@RequestParam("id") String id) {
         return bookService.getById(id);
     }
 
     @PostMapping(path = "/api/book", consumes = "application/json")
-    public Book saveBook(@RequestBody Book book) {
+    public Mono<Book> saveBook(@RequestBody Book book) {
         return bookService.update(book);
     }
 
     @DeleteMapping(path = "/api/book")
-    public ResponseEntity deleteBook(@RequestParam("id") String id) {
-        bookService.delete(id);
-        return ResponseEntity.ok().build();
+    public Mono<Void> deleteBook(@RequestParam("id") String id) {
+        return bookService.delete(id);
     }
 
-    @PostMapping(path="/api/book/{id}/comment", consumes = "application/json")
-    public CommentDto addComment(@RequestBody CommentDto comment) {
+    @PostMapping(path = "/api/book/{id}/comment", consumes = "application/json")
+    public Mono<CommentDto> addComment(@RequestBody CommentDto comment) {
         return commentService.create(comment);
     }
 
     @GetMapping(path = "/api/book/{id}/comments")
-    public List<CommentDto> getCommentsById(@PathVariable("id") String id) {
+    public Flux<CommentDto> getCommentsById(@PathVariable("id") String id) {
         return commentService.getByBookId(id);
     }
 

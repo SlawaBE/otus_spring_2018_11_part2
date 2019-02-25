@@ -6,11 +6,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.entity.Book;
 import ru.otus.repository.BookRepository;
-
-import java.util.List;
-import java.util.Optional;
+import ru.otus.repository.CommentRepository;
 
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.*;
@@ -23,36 +23,40 @@ class BookServiceImplTest {
     private BookServiceImpl bookService;
 
     @Mock
-    private BookRepository repository;
+    private BookRepository bookRepository;
+
+    @Mock
+    private CommentRepository commentRepository;
 
     @Test
     void update() {
         Book book = book();
         bookService.update(book);
-        verify(repository, times(1)).save(book);
+        verify(bookRepository, times(1)).save(book);
     }
 
     @Test
     void getById() {
-        Book book = book();
-        when(repository.findById("id")).thenReturn(Optional.of(book));
-        Book actual = bookService.getById("id");
-        verify(repository, times(1)).findById("id");
+        when(bookRepository.findById("id")).thenReturn(Mono.fromSupplier(this::book));
+        bookService.getById("id");
+        verify(bookRepository, times(1)).findById("id");
 
     }
 
     @Test
     void getAll() {
-        Book book = book();
-        when(repository.findAll()).thenReturn(singletonList(book));
-        List<Book> list = bookService.getAll();
-        verify(repository, times(1)).findAll();
+        when(bookRepository.findAll()).thenReturn(Flux.fromIterable(singletonList(book())));
+        bookService.getAll();
+        verify(bookRepository, times(1)).findAll();
     }
 
     @Test
     void delete() {
+        when(bookRepository.deleteById("id")).thenReturn(Mono.empty());
+        when(commentRepository.deleteByBookId("id")).thenReturn(Mono.empty());
         bookService.delete("id");
-        verify(repository, times(1)).deleteById("id");
+        verify(bookRepository, times(1)).deleteById("id");
+        verify(commentRepository, times(1)).deleteByBookId("id");
     }
 
     private Book book() {

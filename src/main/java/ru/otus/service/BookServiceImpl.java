@@ -1,47 +1,51 @@
 package ru.otus.service;
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.entity.Book;
 import ru.otus.repository.BookRepository;
-
-import java.util.List;
+import ru.otus.repository.CommentRepository;
 
 @Service
 public class BookServiceImpl implements BookService {
 
     private final BookRepository repository;
 
-    public BookServiceImpl(BookRepository repository) {
+    private final CommentRepository commentRepository;
+
+    public BookServiceImpl(BookRepository repository, CommentRepository commentRepository) {
         this.repository = repository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
-    public Book update(Book book) {
+    public Mono<Book> update(Book book) {
         return repository.save(book);
     }
 
     @Override
-    public Book getById(String id) {
-        return repository.findById(id).get();
+    public Mono<Book> getById(String id) {
+        return repository.findById(id);
     }
 
     @Override
-    public List<Book> getAll() {
+    public Flux<Book> getAll() {
         return repository.findAll();
     }
 
     @Override
-    public void delete(String id) {
-        repository.deleteById(id);
+    public Mono<Void> delete(String id) {
+        return repository.deleteById(id).and(commentRepository.deleteByBookId(id));
     }
 
     @Override
-    public List<Book> findByAuthor(String name) {
+    public Flux<Book> findByAuthor(String name) {
         return repository.findByAuthor(name);
     }
 
     @Override
-    public List<Book> findByGenre(String genre) {
+    public Flux<Book> findByGenre(String genre) {
         return repository.findByGenresContaining(genre);
     }
 

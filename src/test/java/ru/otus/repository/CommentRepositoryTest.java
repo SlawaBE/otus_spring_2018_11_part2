@@ -39,8 +39,8 @@ class CommentRepositoryTest {
     @Test
     void testCreate() {
         Comment expected = comment();
-        repository.save(expected);
-        Comment actual = getComment(expected.getId());
+        String id = repository.save(expected).block().getId();
+        Comment actual = getComment(id);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("userName", "user")
                 .hasFieldOrPropertyWithValue("text", "text")
@@ -52,20 +52,20 @@ class CommentRepositoryTest {
     void testDelete() {
         Comment comment = mongoTemplate.save(comment());
         assertNotNull(getComment(comment.getId()));
-        repository.deleteById(comment.getId());
+        repository.deleteById(comment.getId()).block();
         assertNull(getComment(comment.getId()));
     }
 
     @Test
     void testFindByBookId() {
-        List<Comment> list = repository.findByBookId("b1");
+        List<Comment> list = repository.findByBookId("b1").collectList().block();
         assertThat(list).asList()
                 .hasSize(2);
     }
 
     @Test
     void testDeleteByBookId() {
-        repository.deleteByBookId("b1");
+        repository.deleteByBookId("b1").block();
         List<Comment> list = getCommentsByBookId("b1");
         assertThat(list).asList()
                 .hasSize(0);
