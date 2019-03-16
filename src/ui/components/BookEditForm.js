@@ -1,6 +1,8 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import InputList from './InputList';
+import { sendGet, sendJson } from '../utils/RequestUtil';
+import { ErrorMessage } from '../utils/Styles';
 
 export default class BookEditForm extends React.Component {
 
@@ -11,27 +13,26 @@ export default class BookEditForm extends React.Component {
             summary: '',
             genres: [],
             authors: [],
-            redirect: false
+            redirect: false,
+            errorMessage: null,
         }
     }
 
     componentDidMount() {
         const id = this.props.match.params.id;
-        console.log(id);
         if (id) {
-            fetch(`/api/book?id=${id}`, {
-                method: 'GET',
-            }).then((response) => {
-                return response.json();
-            }).then((value) => {
-                this.setState({
-                    id: value.id,
-                    name: value.name,
-                    summary: value.summary,
-                    genres: value.genres,
-                    authors: value.authors
-                })
-            });
+            sendGet(`/api/book?id=${id}`,
+                (value) => {
+                    this.setState({
+                        id: value.id,
+                        name: value.name,
+                        summary: value.summary,
+                        genres: value.genres,
+                        authors: value.authors
+                    })
+                },
+                this.props.handleUnauthorized
+            );
         }
     }
 
@@ -47,15 +48,21 @@ export default class BookEditForm extends React.Component {
             genres: this.state.genres,
             authors: this.state.authors
         };
-        fetch('/api/book', {
-            method: 'POST',
-            body: JSON.stringify(book),
-            headers: { 'Content-Type': 'application/json' }
-        }).then((response) => {
-            return response.json();
-        }).then((value) => {
-            this.setState({ redirect: `/book/view/${value.id}` });
-        });
+        sendJson('/api/book',
+            book,
+            (value) => {
+                this.setState({ redirect: `/book/view/${value.id}` });
+            },
+            this.handleError
+        );
+    }
+
+    handleError = (errorCode) => {
+        if (errorCode == 403) {
+            this.setState({ errorMessage: "Недостаточно прав" });
+        } else {
+            this.props.handleUnauthorized();
+        }
     }
 
     handleCancel = (event) => {
@@ -75,7 +82,7 @@ export default class BookEditForm extends React.Component {
         if (redirect) {
             return <Redirect to={redirect} />
         }
-        const { name, summary, genres, authors } = this.state;
+        const { name, summary, genres, authors, errorMessage } = this.state;
         return (
             <div>
                 <h3>Информация о книге:</h3>
@@ -98,6 +105,9 @@ export default class BookEditForm extends React.Component {
 
                 <input type="submit" onClick={this.handleSubmit} value="Сохранить" />
                 <input type="submit" onClick={this.handleCancel} value="Отмена" />
+                {
+                    errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>
+                }
             </div>
         )
     }

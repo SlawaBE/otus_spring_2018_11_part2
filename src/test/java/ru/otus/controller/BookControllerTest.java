@@ -1,10 +1,13 @@
 package ru.otus.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,12 +21,13 @@ import java.util.Date;
 import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
 
-@WebFluxTest(BookController.class)
+@SpringBootTest
 class BookControllerTest {
 
     @Autowired
-    private WebTestClient webTestClient;
+    private ApplicationContext applicationContext;
 
     @MockBean
     private CommentService commentService;
@@ -31,7 +35,18 @@ class BookControllerTest {
     @MockBean
     private BookService bookService;
 
+    private WebTestClient webTestClient;
+
+    @BeforeEach
+    void init() {
+        webTestClient = WebTestClient.bindToApplicationContext(applicationContext)
+                .apply(springSecurity())
+                .configureClient()
+                .build();
+    }
+
     @Test
+    @WithMockUser(roles = "ADMIN")
     void booksList() throws Exception {
         when(bookService.getAll()).thenReturn(Flux.fromIterable(singletonList(book())));
         webTestClient.get().uri("/api/books")
@@ -41,6 +56,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void getBook() throws Exception {
         when(bookService.getById("id")).thenReturn(Mono.fromSupplier(this::book));
         webTestClient.get().uri("/api/book?id=id")
@@ -50,7 +66,8 @@ class BookControllerTest {
     }
 
     @Test
-    void saveBook() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    void adminSaveBook() throws Exception {
         when(bookService.update(any(Book.class))).thenReturn(Mono.fromSupplier(this::book));
         webTestClient.post().uri("/api/book")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -61,13 +78,34 @@ class BookControllerTest {
     }
 
     @Test
-    void deleteBook() throws Exception {
+    @WithMockUser(roles = "USER")
+    void userSaveBook() throws Exception {
+        when(bookService.update(any(Book.class))).thenReturn(Mono.fromSupplier(this::book));
+        webTestClient.post().uri("/api/book")
+                .contentType(MediaType.APPLICATION_JSON)
+                .syncBody(book())
+                .exchange()
+                .expectStatus().isForbidden();
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void adminDeleteBook() throws Exception {
         webTestClient.delete().uri("/api/book?id=id")
                 .exchange()
                 .expectStatus().isOk();
     }
 
     @Test
+    @WithMockUser(roles = "USER")
+    void userDeleteBook() throws Exception {
+        webTestClient.delete().uri("/api/book?id=id")
+                .exchange()
+                .expectStatus().isForbidden();
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void addComment() throws Exception {
         when(commentService.create(any(CommentDto.class))).thenReturn(Mono.fromSupplier(this::commentDto));
         webTestClient.post().uri("/api/book/id/comment")
@@ -79,6 +117,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void getCommentsById() throws Exception {
         when(commentService.getByBookId("id")).thenReturn(Flux.fromIterable(singletonList(commentDto())));
         webTestClient.get().uri("/api/book/id/comments")

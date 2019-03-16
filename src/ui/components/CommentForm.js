@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { sendJson } from '../utils/RequestUtil';
 
 export default class CommentForm extends React.Component {
 
@@ -20,27 +21,25 @@ export default class CommentForm extends React.Component {
             text: this.state.text,
             bookId: this.props.bookId
         };
-        fetch(`/api/book/${this.props.bookId}/comment`, {
-            method: 'POST',
-            body: JSON.stringify(comment),
-            headers: { 'Content-Type': 'application/json' }
-        }).then((response) => {
-            return response.json();
-        }).then((value) => {
-            this.props.addComment(value);
-            this.setState({userName: null,text: null});
-        });
+        sendJson(`/api/book/${this.props.bookId}/comment`,
+            comment,
+            (value) => {
+                this.props.addComment(value);
+                this.setState({ userName: null, text: null });
+            },
+            this.props.handleUnauthorized
+        );
     }
 
     render() {
-        const {userName, text}= this.state;
+        const { userName, text } = this.state;
         return (
             <div>
                 <fieldset>
                     <legend>Добавить комментарий</legend>
                     <div className="row">
                         <label htmlFor="name-input">Ваше имя</label>
-                        <input id="name-input" name="userName" onChange={this.handleChangeInput} value={userName || ''}/>
+                        <input id="name-input" name="userName" onChange={this.handleChangeInput} value={userName || ''} />
                     </div>
                     <div className="row">
                         <label htmlFor="text-input">Текст комментария:</label>

@@ -3,8 +3,13 @@ package ru.otus.bee;
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 import com.mongodb.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import ru.otus.entity.Role;
+import ru.otus.entity.User;
 
 import java.util.*;
+
+import static java.util.Collections.singletonList;
 
 @ChangeLog
 public class DatabaseChangelog {
@@ -16,12 +21,12 @@ public class DatabaseChangelog {
         books.add(new BasicDBObject()
                 .append("name", "Автостопом по галактике")
                 .append("summary", "Путеводитель для путешествующих по галактике автостопом")
-                .append("authors", Collections.singletonList("Дуглас Адамс"))
-                .append("genres", Collections.singletonList("фантастика")));
+                .append("authors", singletonList("Дуглас Адамс"))
+                .append("genres", singletonList("фантастика")));
         books.add(new BasicDBObject()
                 .append("name", "Властелин Колец")
                 .append("summary", "Одно из самых известных произведений жанра фэнтези")
-                .append("authors", Collections.singletonList("Джон Толкин"))
+                .append("authors", singletonList("Джон Толкин"))
                 .append("genres", Arrays.asList("приключения", "фэнтези")));
 
         booksDbCollection.insert(books);
@@ -55,6 +60,23 @@ public class DatabaseChangelog {
         );
 
         commentsCollection.insert(comments);
+    }
+
+    @ChangeSet(order = "003", id = "addUsers", author = "SlawaBE")
+    public void insertUsers(MongoTemplate mongoTemplate) {
+        Role adminRole = new Role("ROLE_ADMIN");
+        Role userRole = new Role("ROLE_USER");
+        mongoTemplate.insert(adminRole);
+        mongoTemplate.insert(userRole);
+
+        User admin = new User("admin", "$2a$10$BoQrql.p4u1UKMqELmywZOSwgbu7eCZGdmzLMVMopHIkYShkMKEFO");
+        admin.setRoles(singletonList(adminRole));
+
+        User user = new User("user", "$2a$10$f52p8IkiwusqPKmuc53G2.rnxvrczXhFkXvfcq7ZMnxGi5cM4zCPi");
+        user.setRoles(singletonList(userRole));
+
+        mongoTemplate.insert(admin);
+        mongoTemplate.insert(user);
     }
 
 }

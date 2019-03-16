@@ -10,8 +10,8 @@ import java.util.Date;
 
 @Getter
 @Setter
-public @Document("comments")
-class Comment {
+@Document("comments")
+public class Comment {
 
     @Id
     private String id;
