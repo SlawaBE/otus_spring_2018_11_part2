@@ -1,6 +1,7 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import BookQuickView from './BookQuickView';
+import { sendGet } from '../utils/RequestUtil';
 
 export default class BookList extends React.Component {
 
@@ -12,15 +13,12 @@ export default class BookList extends React.Component {
     }
 
     componentDidMount() {
-        fetch("/api/books", {
-            method: 'GET',
-        }).then((response) => {
-            return response.json();
-        }).then((value) => {
-            this.setState({
-                books: value
-            })
-        });
+        sendGet("/api/books",
+            (books) => {
+                this.setState({ books: books })
+            },
+            this.props.handleUnauthorized
+        );
     }
 
     render() {

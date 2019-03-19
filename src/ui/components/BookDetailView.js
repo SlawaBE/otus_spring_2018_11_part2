@@ -2,21 +2,34 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import BookInfo from './BookInfo';
 import CommentBlock from './CommentBlock';
+import { sendDelete } from '../utils/RequestUtil';
+import { ErrorMessage } from '../utils/Styles';
 
 export default class BookDetailView extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            redirect: null
+            redirect: null,
+            errorMessage: null,
         }
     }
 
     handleDelete = () => {
-        fetch(`/api/book?id=${this.props.match.params.id}`, { method: 'DELETE' })
-            .then((response) => {
+        sendDelete(`/api/book?id=${this.props.match.params.id}`,
+            () => {
                 this.setState({ redirect: '/' });
-            });
+            },
+            this.handleError
+        );
+    }
+
+    handleError = (errorCode) => {
+        if (errorCode == 403) {
+            this.setState({ errorMessage: "Недостаточно прав" });
+        } else {
+            this.props.handleUnauthorized();
+        }
     }
 
     handleEdit = () => {
@@ -24,7 +37,7 @@ export default class BookDetailView extends React.Component {
     }
 
     render() {
-        const { redirect } = this.state;
+        const { redirect, errorMessage } = this.state;
         if (redirect) {
             return <Redirect to={redirect} />;
         }
@@ -35,14 +48,16 @@ export default class BookDetailView extends React.Component {
                     <Link to='/'>Вернуться к списку</Link>
                 </div>
 
-                <BookInfo id={bookId} />
+                <BookInfo id={bookId} handleUnauthorized={this.props.handleUnauthorized} />
 
                 <div>
                     <input type="submit" value='Редактировать' onClick={this.handleEdit} />
                     <input type="submit" value='Удалить' onClick={this.handleDelete} />
                 </div>
 
-                <CommentBlock bookId={bookId} />
+                {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+
+                <CommentBlock bookId={bookId} handleUnauthorized={this.props.handleUnauthorized} />
             </React.Fragment>
         );
     }

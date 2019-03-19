@@ -1,6 +1,7 @@
 import React from 'react';
 import Loader from './Loader';
 import DataList from './DataList';
+import { sendGet } from '../utils/RequestUtil';
 
 export default class BookInfo extends React.Component {
 
@@ -13,15 +14,14 @@ export default class BookInfo extends React.Component {
 
     componentDidMount() {
         const id = this.props.id;
-        fetch(`/api/book?id=${id}`, {
-            method: 'GET',
-        }).then((response) => {
-            return response.json();
-        }).then((value) => {
-            this.setState({
-                book: value
-            })
-        });
+        sendGet(`/api/book?id=${id}`,
+            (value) => {
+                this.setState({
+                    book: value
+                })
+            },
+            this.props.handleUnauthorized
+        );
     }
 
 

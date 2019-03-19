@@ -1,12 +1,8 @@
 import React from 'react'
 import Loader from './Loader';
 import CommentForm from './CommentForm';
-import styled from 'styled-components';
-
-const UserName = styled.span`
-    padding: 10px;
-    font-weight: bold;
-`
+import { sendGet } from '../utils/RequestUtil';
+import { UserName } from '../utils/Styles';
 
 export default class CommentBlock extends React.Component {
 
@@ -19,15 +15,14 @@ export default class CommentBlock extends React.Component {
 
     componentDidMount() {
         const id = this.props.bookId;
-        fetch(`/api/book/${id}/comments`, {
-            method: 'GET',
-        }).then((response) => {
-            return response.json();
-        }).then((value) => {
-            this.setState({
-                comments: value
-            })
-        });
+        sendGet(`/api/book/${id}/comments`,
+            (value) => {
+                this.setState({
+                    comments: value
+                })
+            },
+            this.props.handleUnauthorized
+        );
     }
 
     addComment = (newComment) => {
@@ -61,7 +56,7 @@ export default class CommentBlock extends React.Component {
                     )}
                 </div>
 
-                <CommentForm bookId={bookId} addComment={this.addComment} />
+                <CommentForm bookId={bookId} addComment={this.addComment} handleUnauthorized={this.props.handleUnauthorized} />
 
             </React.Fragment>
         )
