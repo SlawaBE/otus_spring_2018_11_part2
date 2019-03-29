@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.entity.Book;
+import ru.otus.entity.User;
 import ru.otus.repository.BookRepository;
 import ru.otus.repository.CommentRepository;
 
@@ -31,7 +32,8 @@ class BookServiceImplTest {
     @Test
     void update() {
         Book book = book();
-        bookService.update(book);
+        when(bookRepository.save(any(Book.class))).thenReturn(Mono.fromSupplier(this::book));
+        bookService.update(book, user());
         verify(bookRepository, times(1)).save(book);
     }
 
@@ -61,6 +63,10 @@ class BookServiceImplTest {
 
     private Book book() {
         return new Book("id", "bookName", "summary", singletonList("author"), singletonList("genre"));
+    }
+
+    private User user() {
+        return new User("user", "pass");
     }
 
 }
