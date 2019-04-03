@@ -13,7 +13,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
-class UserRepositoryTest {
+class UserRepositoryTest extends RepositoryTest {
 
 
     @Autowired
