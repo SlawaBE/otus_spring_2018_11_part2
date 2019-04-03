@@ -2,3 +2,6 @@ spring:
   data:
     mongodb:
       database: library
+  batch:
+    job:
+      enabled: false
