@@ -1,5 +1,7 @@
 package ru.otus.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -31,8 +33,8 @@ public class BookController {
     }
 
     @PostMapping(path = "/api/book", consumes = "application/json")
-    public Mono<Book> saveBook(@RequestBody Book book) {
-        return bookService.update(book);
+    public Mono<Book> saveBook(@RequestBody Book book, @AuthenticationPrincipal UserDetails userDetails) {
+        return bookService.update(book, userDetails);
     }
 
     @DeleteMapping(path = "/api/book")

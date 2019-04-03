@@ -1,7 +1,6 @@
 package ru.otus.security;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -19,8 +18,6 @@ public class SecurityConfiguration {
         return security.csrf().disable()
 
                 .authorizeExchange()
-                .pathMatchers(HttpMethod.POST, "/api/book").hasRole("ADMIN")
-                .pathMatchers(HttpMethod.DELETE, "/api/book").hasRole("ADMIN")
                 .pathMatchers("/api/**").authenticated()
                 .anyExchange().permitAll()
 

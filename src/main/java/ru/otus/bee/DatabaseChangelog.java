@@ -4,6 +4,12 @@ import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 import com.mongodb.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.DomainObjectPermission;
+import org.springframework.security.acls.domain.MongoAcl;
+import org.springframework.security.acls.domain.MongoSid;
+import ru.otus.entity.Book;
 import ru.otus.entity.Role;
 import ru.otus.entity.User;
 
@@ -77,6 +83,19 @@ public class DatabaseChangelog {
 
         mongoTemplate.insert(admin);
         mongoTemplate.insert(user);
+    }
+
+    @ChangeSet(order = "004", id = "addAcls", author = "SlawaBE")
+    public void insertAcls(MongoTemplate mongoTemplate) {
+        List<Book> books = mongoTemplate.find(new Query(), Book.class);
+
+        for (Book book : books) {
+            MongoSid admin = new MongoSid("admin");
+            MongoAcl acl = new MongoAcl(book.getId(), Book.class.getName(), UUID.randomUUID().toString(), admin, null, true);
+            acl.getPermissions().add(new DomainObjectPermission(UUID.randomUUID().toString(), admin, BasePermission.ADMINISTRATION.getMask(), true, false, false));
+            mongoTemplate.insert(acl);
+        }
+
     }
 
 }

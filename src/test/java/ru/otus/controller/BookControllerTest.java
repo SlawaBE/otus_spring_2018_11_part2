@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -67,8 +68,8 @@ class BookControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void adminSaveBook() throws Exception {
-        when(bookService.update(any(Book.class))).thenReturn(Mono.fromSupplier(this::book));
+    void saveBook() throws Exception {
+        when(bookService.update(any(Book.class), any(UserDetails.class))).thenReturn(Mono.fromSupplier(this::book));
         webTestClient.post().uri("/api/book")
                 .contentType(MediaType.APPLICATION_JSON)
                 .syncBody(book())
@@ -78,30 +79,11 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    void userSaveBook() throws Exception {
-        when(bookService.update(any(Book.class))).thenReturn(Mono.fromSupplier(this::book));
-        webTestClient.post().uri("/api/book")
-                .contentType(MediaType.APPLICATION_JSON)
-                .syncBody(book())
-                .exchange()
-                .expectStatus().isForbidden();
-    }
-
-    @Test
     @WithMockUser(roles = "ADMIN")
-    void adminDeleteBook() throws Exception {
+    void deleteBook() throws Exception {
         webTestClient.delete().uri("/api/book?id=id")
                 .exchange()
                 .expectStatus().isOk();
-    }
-
-    @Test
-    @WithMockUser(roles = "USER")
-    void userDeleteBook() throws Exception {
-        webTestClient.delete().uri("/api/book?id=id")
-                .exchange()
-                .expectStatus().isForbidden();
     }
 
     @Test
