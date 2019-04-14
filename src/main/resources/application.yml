@@ -1,5 +1,5 @@
 spring:
   data:
     mongodb:
-      database: library
-      host: mongo
+      database: ${DB_NAME}
+      host: ${DB_HOST}
