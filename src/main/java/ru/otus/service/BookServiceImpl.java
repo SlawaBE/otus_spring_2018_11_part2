@@ -1,5 +1,6 @@
 package ru.otus.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.stereotype.Service;
 import ru.otus.entity.Book;
 import ru.otus.repository.BookRepository;
@@ -16,21 +17,25 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @HystrixCommand(groupKey = "bookService", commandKey = "saveBook")
     public Book update(Book book) {
         return repository.save(book);
     }
 
     @Override
+    @HystrixCommand(groupKey = "bookService", commandKey = "getBook")
     public Book getById(String id) {
         return repository.findById(id).get();
     }
 
     @Override
+    @HystrixCommand(groupKey = "bookService", commandKey = "getAllBook")
     public List<Book> getAll() {
         return repository.findAll();
     }
 
     @Override
+    @HystrixCommand(groupKey = "bookService", commandKey = "deleteBook")
     public void delete(String id) {
         repository.deleteById(id);
     }
