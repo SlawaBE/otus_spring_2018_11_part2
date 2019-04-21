@@ -1,5 +1,6 @@
 package ru.otus.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.stereotype.Component;
 import ru.otus.dto.CommentDto;
 import ru.otus.mapper.CommentMapper;
@@ -21,11 +22,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @HystrixCommand(groupKey = "commentService", commandKey = "createComment")
     public CommentDto create(CommentDto comment) {
         return mapper.convert(repository.save(mapper.convert(comment)));
     }
 
     @Override
+    @HystrixCommand(groupKey = "commentService", commandKey = "getCommentByBookId")
     public List<CommentDto> getByBookId(String id) {
         return repository.findByBookId(id).stream()
                 .map(mapper::convert)
