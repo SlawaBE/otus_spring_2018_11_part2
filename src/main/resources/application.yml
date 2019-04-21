@@ -2,3 +2,18 @@ spring:
   data:
     mongodb:
       database: library
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - beans
+          - health
+          - metrics
+          - env
+          - info
+          - logfile
+logging:
+  path: /
+  file: application.log
